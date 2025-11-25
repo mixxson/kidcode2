@@ -5,7 +5,15 @@ const path = require('path')
 const usersPath = path.join(__dirname, '..', 'data', 'users.json')
 
 function readUsers(){
-  try{ return JSON.parse(fs.readFileSync(usersPath,'utf8')) }catch(e){ return [] }
+  try{
+    const data = JSON.parse(fs.readFileSync(usersPath,'utf8'))
+    // Normalize legacy records (isAdmin -> role)
+    return data.map(u => ({
+      ...u,
+      role: u.role || (u.isAdmin ? 'admin' : 'student'),
+      isAdmin: typeof u.isAdmin === 'boolean' ? u.isAdmin : (u.role === 'admin')
+    }))
+  }catch(e){ return [] }
 }
 
 function verifyToken(req, res, next){
@@ -21,7 +29,7 @@ function verifyToken(req, res, next){
     const users = readUsers()
     const user = users.find(u => u.id === payload.id)
     if (!user) return res.status(401).json({ error: 'User not found' })
-    req.user = { id: user.id, email: user.email, isAdmin: !!user.isAdmin }
+    req.user = { id: user.id, email: user.email, role: user.role || (user.isAdmin ? 'admin' : 'student'), isAdmin: !!user.isAdmin }
     next()
   }catch(err){
     return res.status(401).json({ error: 'Invalid token' })
@@ -34,4 +42,13 @@ function requireAdmin(req, res, next){
   next()
 }
 
-module.exports = { verifyToken, requireAdmin }
+function requireRoles(...roles){
+  return (req, res, next) => {
+    if (!req.user) return res.status(401).json({ error: 'No user' })
+    const role = req.user.role || (req.user.isAdmin ? 'admin' : 'student')
+    if (!roles.includes(role)) return res.status(403).json({ error: 'Forbidden: requires one of roles: ' + roles.join(', ') })
+    next()
+  }
+}
+
+module.exports = { verifyToken, requireAdmin, requireRoles }

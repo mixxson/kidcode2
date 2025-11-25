@@ -1,4 +1,5 @@
 // Serwer Express dla platformy edukacyjnej (PL)
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const apiRoutes = require('./routes/api');
