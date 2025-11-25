@@ -5,6 +5,7 @@ import Lessons from './pages/Lessons'
 import Lesson from './pages/Lesson'
 import Editor from './pages/Editor'
 import Admin from './pages/Admin'
+import CodeRoom from './pages/CodeRoom'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import './styles/index.css'
@@ -52,6 +53,7 @@ export default function App(){
             <Route path="/lessons" element={<Lessons />} />
             <Route path="/lessons/:id" element={<Lesson />} />
             <Route path="/editor/:id" element={<Editor />} />
+            <Route path="/rooms/:id" element={<CodeRoom />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/:id" element={<Admin />} />
             <Route path="/login" element={<Login />} />

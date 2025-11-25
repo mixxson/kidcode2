@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const lessons = require('../controllers/lessonsController');
 const users = require('../controllers/usersController');
+const rooms = require('../controllers/roomsController');
 const auth = require('../middleware/auth');
 
 router.get('/health', (req, res) => res.json({ status: 'ok', service: 'kidcode-backend' }));
@@ -19,3 +20,10 @@ router.get('/auth/me', auth.verifyToken, users.me);
 router.put('/auth/role', auth.verifyToken, auth.requireAdmin, users.setRole);
 
 module.exports = router;
+
+// Rooms endpoints
+router.get('/rooms', auth.verifyToken, rooms.list);
+router.get('/rooms/:id', auth.verifyToken, rooms.getById);
+router.post('/rooms', auth.verifyToken, auth.requireRoles('admin','teacher'), rooms.create);
+router.post('/rooms/:id/join', auth.verifyToken, rooms.join);
+router.delete('/rooms/:id', auth.verifyToken, auth.requireRoles('admin','teacher'), rooms.remove);

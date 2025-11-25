@@ -15,7 +15,20 @@ KidCode to interaktywna platforma edukacyjna do nauki programowania dla dzieci, 
 
 ---
 
-## 📋 Roadmap – Etapy Realizacji
+## �️ Notatki z realizacji (Progress)
+
+Data: 25 listopada 2025
+
+- Zaimplementowano JWT z rolami (admin/teacher/student), endpointy: register/login/me, zmiana ról dla admina.
+- Dodano Socket.IO na backendzie (HTTP server + integracja, middleware autentykacji po JWT) i kliencie.
+- Utworzono infrastrukturę WebSocket: `backend/src/sockets/index.js` z eventami `room:join`, `room:leave`, `code:update`, `cursor:update` (+ broadcast do pokoju).
+- Dodano system pokoi (rooms): `roomsController`, `rooms.json`, trasy REST: list/get/create/join/delete z kontrolą dostępu.
+- Na froncie: `src/services/socketService.js` (połączenie, join/leave, wysyłka/odbiór zmian kodu).
+- README i .env.example zaktualizowane; skrypt `run-all.sh` dodany dla Linux.
+
+Najbliższe kroki: instalacja biblioteki UI (Chakra/Mantine), podstawowy widok Code Room (edytor + output), kontekst Socket i lepszy reconnect.
+
+## �📋 Roadmap – Etapy Realizacji
 
 ### ✅ **Etap 0: Fundament (GOTOWE)**
 
@@ -38,29 +51,29 @@ KidCode to interaktywna platforma edukacyjna do nauki programowania dla dzieci, 
 **Cel:** Implementacja synchronizacji w czasie rzeczywistym
 
 #### 1.1 WebSocket Infrastructure
-- [ ] **Backend: Socket.IO Setup**
-  - Dodać `socket.io` do `backend/package.json`
-  - Stworzyć `backend/src/sockets/index.js` – główny handler WebSocket
-  - Zintegrować Socket.IO z Express server
-  - Implementować middleware autentykacji dla socket connections
+- [x] **Backend: Socket.IO Setup**
+  - [x] Dodać `socket.io` do `backend/package.json`
+  - [x] Stworzyć `backend/src/sockets/index.js` – główny handler WebSocket
+  - [x] Zintegrować Socket.IO z Express server
+  - [x] Implementować middleware autentykacji dla socket connections
 
 - [ ] **Frontend: Socket.IO Client**
-  - Dodać `socket.io-client` do `frontend/package.json`
-  - Stworzyć `frontend/src/services/socketService.js` – wrapper dla socket klienta
-  - Stworzyć React Context dla socket connections
-  - Implementować auto-reconnect i error handling
+  - [x] Dodać `socket.io-client` do `frontend/package.json`
+  - [x] Stworzyć `frontend/src/services/socketService.js` – wrapper dla socket klienta
+  - [ ] Stworzyć React Context dla socket connections
+  - [ ] Implementować auto-reconnect i error handling
 
 #### 1.2 System Pokoi (Rooms)
 - [ ] **Backend: Rooms Management**
-  - Stworzyć `backend/src/models/Room.js` – model pokoju
-  - Stworzyć `backend/src/controllers/roomsController.js`
-  - API endpoints:
-    - `POST /api/rooms` – utworzenie pokoju przez nauczyciela
-    - `GET /api/rooms` – lista pokoi (filtrowane według roli)
-    - `GET /api/rooms/:id` – szczegóły pokoju
-    - `POST /api/rooms/:id/join` – dołączenie do pokoju
-    - `DELETE /api/rooms/:id` – usunięcie pokoju
-  - Przechowywanie: `backend/src/data/rooms.json`
+  - [ ] Stworzyć `backend/src/models/Room.js` – model pokoju
+  - [x] Stworzyć `backend/src/controllers/roomsController.js`
+  - [x] API endpoints:
+    - [x] `POST /api/rooms` – utworzenie pokoju przez nauczyciela
+    - [x] `GET /api/rooms` – lista pokoi (filtrowane według roli)
+    - [x] `GET /api/rooms/:id` – szczegóły pokoju
+    - [x] `POST /api/rooms/:id/join` – dołączenie do pokoju
+    - [x] `DELETE /api/rooms/:id` – usunięcie pokoju
+  - [x] Przechowywanie: `backend/src/data/rooms.json`
   - Struktura pokoju:
     ```json
     {
@@ -84,14 +97,14 @@ KidCode to interaktywna platforma edukacyjna do nauki programowania dla dzieci, 
 
 #### 1.3 Synchronizacja Kodu
 - [ ] **Backend: Code Sync Logic**
-  - Stworzyć `backend/src/sockets/handlers/codeSync.js`
-  - Socket events:
-    - `code:update` – zmiana kodu (emit od klienta)
-    - `code:broadcast` – rozesłanie do pokoju (broadcast)
-    - `cursor:position` – pozycja kursora użytkownika
-    - `selection:change` – zaznaczenie tekstu
-  - Implementować debouncing (50-100ms) dla zmian kodu
-  - Operational Transform lub CRDT dla conflict resolution (opcjonalnie: biblioteka Yjs)
+  - [ ] Stworzyć `backend/src/sockets/handlers/codeSync.js`
+  - Socket events (stan):
+    - [x] `code:update` – zmiana kodu (emit od klienta)
+    - [x] `code:broadcast` – rozesłanie do pokoju (broadcast)
+    - [x] `cursor:position` – pozycja kursora użytkownika
+    - [ ] `selection:change` – zaznaczenie tekstu
+  - [ ] Implementować debouncing (50-100ms) dla zmian kodu
+  - [ ] Operational Transform lub CRDT dla conflict resolution (opcjonalnie: biblioteka Yjs)
 
 - [ ] **Frontend: Code Editor Integration**
   - Wybrać edytor: **Monaco Editor** (VSCode) lub **CodeMirror 6**
@@ -402,10 +415,10 @@ KidCode to interaktywna platforma edukacyjna do nauki programowania dla dzieci, 
 ## 🏁 Milestones – Quick Wins
 
 ### Milestone 1 (2 tygodnie)
-- ✅ Autentykacja (już gotowe)
-- 🔧 WebSocket infrastructure
-- 🔧 System pokoi (CRUD)
-- 🔧 Basic code editor (Monaco)
+- [x] Autentykacja (już gotowe)
+- [x] WebSocket infrastructure (backend + client wrapper)
+- [x] System pokoi (CRUD + uprawnienia)
+- [ ] Basic code editor (Monaco)
 
 ### Milestone 2 (3 tygodnie)
 - 🔧 Real-time sync kodu
