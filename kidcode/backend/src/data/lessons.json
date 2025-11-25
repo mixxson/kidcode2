@@ -43,5 +43,14 @@
     "language": "python",
     "content": "<h3>Pętle w Python</h3><p>Poznasz pętlę <code>for</code> i <code>while</code> do powtarzania czynności.</p><pre><code>for i in range(1, 6):\n    print(f'Krok {i}')</code></pre>",
     "starterCode": "# Pętla for\nfor i in range(1, 6):\n    print(f'Krok {i}')\n\n# Twój kod poniżej:"
+  },
+  {
+    "id": 7,
+    "title": "1",
+    "difficulty": "Łatwy",
+    "durationMin": 10,
+    "language": "javascript",
+    "content": "1",
+    "starterCode": "1"
   }
 ]

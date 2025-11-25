@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom'
+import { SocketProvider } from './context/SocketContext'
+import ConnectionStatus from './components/ConnectionStatus'
 import Home from './pages/Home'
 import Lessons from './pages/Lessons'
 import Lesson from './pages/Lesson'
@@ -38,41 +40,44 @@ export default function App(){
   }
 
   return (
-    <BrowserRouter>
-      <div className="container">
-        <header className="header">
-          <Link to="/" className="brand">KidCode</Link>
-          <nav className="nav">
-            <Link to="/lessons">Lekcje</Link>
-            {user && <Link to="/rooms">Pokoje</Link>}
-            {user && user.isAdmin ? <Link to="/admin">Admin</Link> : null}
-            {!user ? (
-              <>
-                <Link to="/login">Zaloguj</Link>
-                <Link to="/register">Rejestracja</Link>
-              </>
-            ) : (
-              <a href="#" onClick={(e)=>{e.preventDefault(); logout()}}>Wyloguj</a>
-            )}
-          </nav>
-        </header>
+    <SocketProvider>
+      <BrowserRouter>
+        <ConnectionStatus />
+        <div className="container">
+          <header className="header">
+            <Link to="/" className="brand">KidCode</Link>
+            <nav className="nav">
+              <Link to="/lessons">Lekcje</Link>
+              {user && <Link to="/rooms">Pokoje</Link>}
+              {user && user.isAdmin ? <Link to="/admin">Admin</Link> : null}
+              {!user ? (
+                <>
+                  <Link to="/login">Zaloguj</Link>
+                  <Link to="/register">Rejestracja</Link>
+                </>
+              ) : (
+                <a href="#" onClick={(e)=>{e.preventDefault(); logout()}}>Wyloguj</a>
+              )}
+            </nav>
+          </header>
 
-        <div className="card">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/lessons" element={<Lessons />} />
-            <Route path="/lessons/:id" element={<Lesson />} />
-            <Route path="/editor/:id" element={<Editor />} />
-            <Route path="/rooms" element={<RoomsList />} />
-            <Route path="/rooms/new" element={<RoomCreate />} />
-            <Route path="/rooms/:id" element={<CodeRoom />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin/:id" element={<Admin />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Routes>
+          <div className="card">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/lessons" element={<Lessons />} />
+              <Route path="/lessons/:id" element={<Lesson />} />
+              <Route path="/editor/:id" element={<Editor />} />
+              <Route path="/rooms" element={<RoomsList />} />
+              <Route path="/rooms/new" element={<RoomCreate />} />
+              <Route path="/rooms/:id" element={<CodeRoom />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/admin/:id" element={<Admin />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Routes>
+          </div>
         </div>
-      </div>
-    </BrowserRouter>
+      </BrowserRouter>
+    </SocketProvider>
   )
 }

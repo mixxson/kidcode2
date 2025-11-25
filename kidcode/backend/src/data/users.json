@@ -1,8 +1,8 @@
 [
   {
     "id": 1,
-    "email": "lol@gmail.com",
-    "passwordHash": "$2a$08$Ih./9Z5OYKB74macpyPx3.Gfz2IcA3RF1fpkSm2QomadbAyfb3Gw2",
+    "email": "admin@kidcode.com",
+    "passwordHash": "$2a$08$6uUGW.rsRvN16E5qr/rwve1sX/Cnj9Af/C4W9odAGBYg28wjofnS2",
     "isAdmin": true,
     "role": "admin"
   },

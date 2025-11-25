@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "1",
+    "teacherId": 1,
+    "studentId": 1,
+    "lessonId": null,
+    "language": "javascript",
+    "code": "// Zacznij pisać kod...",
+    "createdAt": "2025-11-25T19:04:06.001Z",
+    "active": true
+  }
+]

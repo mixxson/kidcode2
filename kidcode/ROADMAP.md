@@ -24,29 +24,35 @@ Data: 25 listopada 2025
 - **Socket.IO Backend:** HTTP server + integracja, middleware autentykacji JWT, eventy: `room:join`, `room:leave`, `code:update`, `cursor:update`.
 - **Rooms System:** `roomsController`, `rooms.json`, trasy REST: list/get/create/join/delete z kontrolą dostępu.
 - **Socket.IO Client:** `src/services/socketService.js` (połączenie, join/leave, wysyłka/odbiór zmian kodu).
+- **SocketContext:** React Context z auto-reconnect, debouncing (100ms), ConnectionStatus component.
 - **Chakra UI v3:** Zainstalowano i skonfigurowano `ChakraProvider` z `defaultSystem`.
-- **Monaco Editor:** Dodano `@monaco-editor/react`, utworzono `CodeRoom.jsx` z real-time sync kodu (podstawowa wersja).
+- **Monaco Editor:** Dodano `@monaco-editor/react`, utworzono `CodeRoom.jsx` z real-time sync kodu.
+- **JavaScript Execution:** Web Worker sandbox z timeout, console.log capture, error handling.
+- **Python Execution:** Pyodide (CDN) z stdout/stderr capture, async execution.
+- **Editor.jsx:** Universal editor z auto-save, language detection, progress persistence.
+- **Lessons System:** Enhanced lessons page z filters, difficulty badges, language indicators.
 - **RoomsList:** Strona listy pokoi z filtrowaniem według roli (teacher/student), przycisk tworzenia dla nauczycieli.
 - **RoomCreate:** Strona tworzenia pokoju z wyborem ucznia, języka i nazwy (dla teachers/admins).
 - **Navigation:** Dodano link "Pokoje" w navbar dla zalogowanych użytkowników.
 - **Auth Fix:** Login/Register teraz przeładowują stronę (`window.location.href`) aby odświeżyć stan użytkownika.
-- **Admin Guard:** Strona Admin sprawdza localStorage przed renderowaniem.
+- **Admin Guard:** Strona Admin sprawdza localStorage przed renderowaniem, obsługuje language field.
+- **Student UI:** Cleaned up Home page - hide admin actions from students, role-based UI.
 - **README:** Zaktualizowano z instrukcjami JWT i .env; skrypt `run-all.sh` dla Linux.
 
 ### 🔧 W trakcie
-- Debouncing dla `code:update` (obecnie wysyła przy każdej zmianie).
-- Socket Context z auto-reconnect i toast notifications.
-- Python execution (Pyodide).
+- Brak - wszystkie zadania z Milestone 2 zakończone!
 
 ### 📋 Następne kroki
-1. Dodać Context dla Socket + reconnect/error handling.
+1. ✅ ~~Dodać Context dla Socket + reconnect/error handling~~ — ZROBIONE
 2. ✅ ~~Implementować JS Executor (Web Worker sandbox)~~ — ZROBIONE
-3. Dodać Pyodide dla Python execution.
+3. ✅ ~~Dodać Pyodide dla Python execution~~ — ZROBIONE
 4. ✅ ~~Output Panel z przyciskiem Run~~ — ZROBIONE
 5. ✅ ~~Stworzyć stronę RoomCreate dla nauczycieli~~ — ZROBIONE
-6. Dashboard dla nauczycieli (monitoring aktywnych sesji).
-7. Collaborative cursors w Monaco Editor.
-8. Debouncing dla synchronizacji kodu.
+6. ✅ ~~Debouncing dla synchronizacji kodu~~ — ZROBIONE
+7. Dashboard dla nauczycieli (monitoring aktywnych sesji).
+8. Collaborative cursors w Monaco Editor.
+9. UI/UX improvements (Milestone 3).
+10. Teacher dashboard (Milestone 4).
 
 ## �📋 Roadmap – Etapy Realizacji
 
@@ -435,11 +441,14 @@ Data: 25 listopada 2025
 - [x] Chakra UI integration
 - [x] RoomsList page
 
-### Milestone 2 (3 tygodnie) — 75% ukończone
-- [x] Real-time sync kodu (podstawowa wersja)
+### Milestone 2 (3 tygodnie) — ✅ 100% UKOŃCZONE
+- [x] Real-time sync kodu z debouncing (100ms)
+- [x] Socket Context z auto-reconnect
 - [x] JavaScript execution (Web Worker sandbox)
-- [ ] Python execution (Pyodide)
+- [x] Python execution (Pyodide via CDN)
 - [x] Output panel
+- [x] Enhanced Editor with language support
+- [x] ConnectionStatus component
 
 ### Milestone 3 (2 tygodnie)
 - 🎨 UI/UX redesign (Chakra/Mantine)

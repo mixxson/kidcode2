@@ -2,53 +2,61 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Box, Flex, Heading, HStack, Button, Text, Spacer, Badge } from '@chakra-ui/react'
 import Editor from '@monaco-editor/react'
-import { connectSocket, joinRoom, leaveRoom, onRemoteCodeUpdate, sendCodeUpdate } from '../services/socketService'
+import { useSocket } from '../context/SocketContext'
 import { executeJS } from '../services/jsExecutor'
+import { executePython } from '../services/pythonExecutor'
 import OutputPanel from '../components/OutputPanel'
 
 export default function CodeRoom(){
   const { id } = useParams()
   const roomId = Number(id)
+  const { isConnected, joinRoom, leaveRoom, sendCodeUpdate, onCodeUpdate } = useSocket()
   const [language, setLanguage] = useState('javascript')
   const [code, setCode] = useState('// Zacznij pisać kod...')
-  const [connected, setConnected] = useState(false)
   const [output, setOutput] = useState([])
   const [error, setError] = useState(null)
   const [running, setRunning] = useState(false)
-  const versionRef = useRef(0)
-  const originRef = useRef('local')
+  const isRemoteUpdate = useRef(false)
 
   useEffect(()=>{
-    const s = connectSocket()
-    const onConnect = () => setConnected(true)
-    const onDisconnect = () => setConnected(false)
-    s.on('connect', onConnect)
-    s.on('disconnect', onDisconnect)
+    // Join room when connected
+    if (isConnected) {
+      joinRoom(roomId, (response) => {
+        if (response?.error) {
+          setError(response.error)
+        } else if (response?.room) {
+          // Load room data
+          setLanguage(response.room.language || 'javascript')
+          setCode(response.room.code || (response.room.language === 'python' ? '# Zacznij pisać kod...' : '// Zacznij pisać kod...'))
+        }
+      })
+    }
 
-    joinRoom(roomId)
-
-    const off = onRemoteCodeUpdate(({ code: remoteCode, version }) => {
-      // Ignore if remote version is not newer
-      if (typeof version === 'number' && version <= versionRef.current) return
-      originRef.current = 'remote'
+    // Listen for code updates from other users
+    const cleanup = onCodeUpdate(({ code: remoteCode, language: remoteLang }) => {
+      if (isRemoteUpdate.current) return // Skip if this is our own update
+      
+      isRemoteUpdate.current = true
       setCode(remoteCode)
-      versionRef.current = version || (versionRef.current + 1)
-      originRef.current = 'local'
+      if (remoteLang) setLanguage(remoteLang)
+      
+      // Reset flag after a small delay
+      setTimeout(() => {
+        isRemoteUpdate.current = false
+      }, 100)
     })
 
     return () => {
-      off && off()
       leaveRoom(roomId)
-      s.off('connect', onConnect)
-      s.off('disconnect', onDisconnect)
+      if (cleanup) cleanup()
     }
-  }, [roomId])
+  }, [roomId, isConnected, joinRoom, leaveRoom, onCodeUpdate])
 
   function handleChange(value){
+    if (isRemoteUpdate.current) return // Don't send updates that came from remote
+    
     setCode(value)
-    // bump version and send
-    versionRef.current = versionRef.current + 1
-    sendCodeUpdate(roomId, value, versionRef.current)
+    sendCodeUpdate(roomId, value, language)
   }
 
   async function runCode(){
@@ -56,45 +64,74 @@ export default function CodeRoom(){
     setError(null)
     setRunning(true)
     
-    if (language === 'javascript'){
-      try {
+    try {
+      if (language === 'python') {
+        const result = await executePython(code)
+        if (result.error) {
+          setError(result.error)
+        } else {
+          setOutput([result.output])
+        }
+      } else {
+        // JavaScript
         const result = await executeJS(code)
-        setOutput(result.output || [])
-      } catch(err){
-        setError(err.message)
-      } finally {
-        setRunning(false)
+        if (result.error) {
+          setError(result.error)
+        } else {
+          setOutput(Array.isArray(result.output) ? result.output : [result.output])
+        }
       }
-    } else {
-      // Python - TODO: integrate Pyodide
-      setError('Python execution not yet implemented. Coming soon!')
+    } catch(err) {
+      setError(err.message || err.toString())
+    } finally {
       setRunning(false)
     }
   }
 
+  function handleLanguageChange(newLang) {
+    setLanguage(newLang)
+    // Update room language via socket
+    sendCodeUpdate(roomId, code, newLang)
+  }
+
   return (
     <Flex direction="column" height="calc(100vh - 100px)">
-      <HStack p={3} borderBottom="1px" borderColor="gray.200" gap={3}>
+      <HStack p={3} borderBottom="1px" borderColor="gray.200" gap={3} flexWrap="wrap">
         <Heading size="md">Pokój #{roomId}</Heading>
-        <Badge colorPalette={connected ? 'green' : 'red'}>
-          {connected ? 'Connected' : 'Disconnected'}
+        <Badge colorPalette={isConnected ? 'green' : 'red'} fontSize="xs">
+          {isConnected ? '🟢 Połączony' : '🔴 Rozłączony'}
         </Badge>
         <Spacer />
-        <Text fontSize="sm" color="gray.500">Język:</Text>
-        <select style={{padding:'4px 8px', borderRadius:'4px', border:'1px solid #ccc'}} value={language} onChange={(e)=>setLanguage(e.target.value)}>
-          <option value="javascript">JavaScript</option>
-          <option value="python">Python</option>
-        </select>
-        <Button size="sm" colorPalette="blue" onClick={runCode} loading={running}>
-          {running ? 'Uruchamianie...' : 'Uruchom'}
+        <HStack gap={2}>
+          <Text fontSize="sm" color="gray.500">Język:</Text>
+          <HStack gap={1}>
+            <Button 
+              size="sm" 
+              variant={language === 'javascript' ? 'solid' : 'outline'}
+              colorPalette={language === 'javascript' ? 'yellow' : 'gray'}
+              onClick={() => handleLanguageChange('javascript')}
+            >
+              📜 JS
+            </Button>
+            <Button 
+              size="sm" 
+              variant={language === 'python' ? 'solid' : 'outline'}
+              colorPalette={language === 'python' ? 'blue' : 'gray'}
+              onClick={() => handleLanguageChange('python')}
+            >
+              🐍 Python
+            </Button>
+          </HStack>
+        </HStack>
+        <Button size="sm" colorPalette="green" onClick={runCode} loading={running} disabled={!isConnected}>
+          {running ? '⏳ Uruchamianie...' : '▶️ Uruchom kod'}
         </Button>
       </HStack>
 
       <Flex flex="1 1 auto" overflow="hidden">
-        <Box flex="1 1 60%" minW="0">
+        <Box flex="1 1 60%" minW="0" borderRight="1px" borderColor="gray.200">
           <Editor
             height="100%"
-            defaultLanguage={language === 'python' ? 'python' : 'javascript'}
             language={language === 'python' ? 'python' : 'javascript'}
             value={code}
             onChange={handleChange}
@@ -104,6 +141,9 @@ export default function CodeRoom(){
               fontSize: 14,
               scrollBeyondLastLine: false,
               wordWrap: 'on',
+              lineNumbers: 'on',
+              tabSize: language === 'python' ? 4 : 2,
+              readOnly: !isConnected
             }}
           />
         </Box>
