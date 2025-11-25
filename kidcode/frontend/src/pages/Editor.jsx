@@ -5,38 +5,106 @@ import api from '../services/api'
 export default function Editor(){
   const { id } = useParams()
   const [lesson, setLesson] = useState(null)
-  const [starter, setStarter] = useState('// Ładowanie...')
+  const [code, setCode] = useState('// Ładowanie...')
   const iframeRef = useRef(null)
   const [output, setOutput] = useState('')
+  const codeAreaRef = useRef(null)
 
+  // Загрузка урока и сохраненного кода
   useEffect(()=>{
     api.get(`/lessons/${id}`)
       .then(r => {
         setLesson(r.data.lesson)
-        setStarter(r.data.lesson.starterCode || '')
+        const starterCode = r.data.lesson.starterCode || ''
+        
+        // Проверяем, есть ли сохраненный код для этого урока
+        const savedCode = localStorage.getItem(`lesson_code_${id}`)
+        setCode(savedCode || starterCode)
       })
       .catch((err)=> {
         console.error('Error loading lesson:', err)
-        setStarter('')
+        setCode('')
       })
   },[id])
 
+  // Автосохранение кода при изменении
+  const handleCodeChange = (e) => {
+    const newCode = e.target.value
+    setCode(newCode)
+    localStorage.setItem(`lesson_code_${id}`, newCode)
+  }
+
+  // Сброс к начальному коду
+  const resetCode = () => {
+    if (!lesson) return
+    if (confirm('Czy na pewno chcesz zresetować kod do początkowego stanu?')) {
+      const starterCode = lesson.starterCode || ''
+      setCode(starterCode)
+      localStorage.setItem(`lesson_code_${id}`, starterCode)
+    }
+  }
+
   useEffect(()=>{
     function onMsg(e){
-      if (e.data && e.data.type === 'result') setOutput(String(e.data.payload))
+      if (e.data && e.data.type === 'result') {
+        setOutput(e.data.payload)
+      }
     }
     window.addEventListener('message', onMsg)
     return ()=> window.removeEventListener('message', onMsg)
   },[])
 
   function runCode(){
-    const code = document.getElementById('codeArea').value
     const iframe = iframeRef.current
     if (!iframe) return
+    setOutput('Wykonywanie...')
     iframe.contentWindow.postMessage({ type: 'run', code }, '*')
   }
 
-  const iframeSrc = `<!doctype html><html><body><script>window.addEventListener('message', e=>{ if(e.data && e.data.type==='run'){ try{ const res = (function(){\n"use strict";\nreturn eval(e.data.code)\n})(); parent.postMessage({type:'result', payload:String(res)}, '*') }catch(err){ parent.postMessage({type:'result', payload:err.toString()}, '*') } } })</script></body></html>`
+  const iframeSrc = `<!doctype html><html><body><script>
+    window.addEventListener('message', e => {
+      if(e.data && e.data.type === 'run') {
+        const logs = [];
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = (...args) => {
+          logs.push(args.map(a => String(a)).join(' '));
+        };
+        console.error = (...args) => {
+          logs.push('ERROR: ' + args.map(a => String(a)).join(' '));
+        };
+        console.warn = (...args) => {
+          logs.push('WARNING: ' + args.map(a => String(a)).join(' '));
+        };
+        
+        try {
+          const result = (function() {
+            "use strict";
+            return eval(e.data.code);
+          })();
+          
+          console.log = originalLog;
+          console.error = originalError;
+          console.warn = originalWarn;
+          
+          let output = logs.join('\\n');
+          if (result !== undefined && logs.length === 0) {
+            output = String(result);
+          }
+          
+          parent.postMessage({type:'result', payload: output || '(brak wyniku)'}, '*');
+        } catch(err) {
+          console.log = originalLog;
+          console.error = originalError;
+          console.warn = originalWarn;
+          
+          parent.postMessage({type:'result', payload: '❌ Błąd:\\n' + err.toString()}, '*');
+        }
+      }
+    });
+  </script></body></html>`
 
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto' }}>
@@ -57,9 +125,17 @@ export default function Editor(){
 
       <div className="editor-wrap">
         <div className="editor-area">
+          <div style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span className="small" style={{ color: '#10b981' }}>💾 Kod zapisywany automatycznie</span>
+            <button className="btn btn-ghost" onClick={resetCode} style={{ fontSize: 12, padding: '4px 8px' }}>
+              🔄 Resetuj do początku
+            </button>
+          </div>
           <textarea 
+            ref={codeAreaRef}
             id="codeArea" 
-            defaultValue={starter} 
+            value={code}
+            onChange={handleCodeChange}
             style={{ 
               width: '100%', 
               height: 400, 
