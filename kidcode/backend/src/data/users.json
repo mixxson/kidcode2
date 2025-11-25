@@ -19,5 +19,12 @@
     "passwordHash": "$2a$08$RUEV.23ymE1CUgteQYQHkuuzYP5s6KG.LiaKX0XGLx9wpy8NtrjOa",
     "role": "student",
     "isAdmin": false
+  },
+  {
+    "id": 4,
+    "email": "stu",
+    "passwordHash": "$2a$08$45IswBU5H4vmHg07fBtCEeqLW3jcplcheiR3OhTNpymmxFdpCJS5i",
+    "role": "student",
+    "isAdmin": false
   }
 ]
