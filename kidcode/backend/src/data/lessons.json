@@ -4,6 +4,7 @@
     "title": "Wprowadzenie do programowania",
     "difficulty": "Łatwy",
     "durationMin": 10,
+    "language": "javascript",
     "content": "<h3>Witaj!</h3><p>W tej lekcji poznasz podstawy: co to jest program i jak komputer wykonuje instrukcje. To krótkie wprowadzenie dla najmłodszych.</p><ul><li>Co to jest program?</li><li>Jak działa komputer?</li><li>Prosty przykład w JavaScript</li></ul>",
     "starterCode": "console.log('Witaj, świecie!')"
   },
@@ -12,15 +13,35 @@
     "title": "Proste instrukcje warunkowe",
     "difficulty": "Średni",
     "durationMin": 20,
+    "language": "javascript",
     "content": "<h3>Instrukcje warunkowe</h3><p>Nauczymy się używać <code>if</code> i <code>else</code> do podejmowania decyzji w programie.</p><pre><code>const age = 8;\nif (age >= 7) {\n  console.log('Możesz zacząć naukę programowania!')\n} else {\n  console.log('Poczekaj jeszcze chwilę :)')\n}</code></pre>",
-    "starterCode": "const age = 8; console.log(age)"
+    "starterCode": "const age = 8;\nif (age >= 7) {\n  console.log('Możesz zacząć naukę programowania!')\n} else {\n  console.log('Poczekaj jeszcze chwilę :)')\n}"
   },
   {
     "id": 4,
     "title": "Pętle i powtarzanie",
     "difficulty": "Średni",
     "durationMin": 20,
+    "language": "javascript",
     "content": "<h3>Pętle</h3><p>Poznasz pętle <code>for</code> i <code>while</code> do powtarzania czynności.</p><pre><code>for (let i = 1; i <= 5; i++) {\n  console.log('Krok', i)\n}</code></pre>",
-    "starterCode": "for (let i = 1; i <= 5; i++) { console.log('Krok', i) }"
+    "starterCode": "for (let i = 1; i <= 5; i++) {\n  console.log('Krok', i)\n}"
+  },
+  {
+    "id": 5,
+    "title": "Python - Pierwsze kroki",
+    "difficulty": "Łatwy",
+    "durationMin": 15,
+    "language": "python",
+    "content": "<h3>Witaj w Python!</h3><p>Python to przyjazny język programowania, świetny dla początkujących. Nauczysz się podstaw: wypisywania tekstu, zmiennych i prostych obliczeń.</p><ul><li>Funkcja <code>print()</code></li><li>Zmienne i liczby</li><li>Prosty przykład</li></ul>",
+    "starterCode": "# Witaj w Python!\nprint('Witaj, świecie!')\n\n# Zmienne\nname = 'Programista'\nage = 10\nprint(f'Cześć, jestem {name} i mam {age} lat')"
+  },
+  {
+    "id": 6,
+    "title": "Python - Pętle",
+    "difficulty": "Średni",
+    "durationMin": 20,
+    "language": "python",
+    "content": "<h3>Pętle w Python</h3><p>Poznasz pętlę <code>for</code> i <code>while</code> do powtarzania czynności.</p><pre><code>for i in range(1, 6):\n    print(f'Krok {i}')</code></pre>",
+    "starterCode": "# Pętla for\nfor i in range(1, 6):\n    print(f'Krok {i}')\n\n# Twój kod poniżej:"
   }
 ]

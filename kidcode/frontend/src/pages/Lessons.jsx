@@ -110,6 +110,17 @@ export default function Lessons(){
                     }}>
                       {l.difficulty}
                     </span>
+                    <span style={{
+                      fontSize: 12,
+                      padding: '3px 8px',
+                      borderRadius: 6,
+                      background: l.language === 'python' ? '#3776ab15' : '#f7df1e15',
+                      color: l.language === 'python' ? '#3776ab' : '#d4a024',
+                      fontWeight: 600,
+                      border: `1px solid ${l.language === 'python' ? '#3776ab40' : '#f7df1e40'}`
+                    }}>
+                      {l.language === 'python' ? '🐍 Python' : '📜 JS'}
+                    </span>
                     <span className="small">⏱️ {l.durationMin} min</span>
                   </div>
                 </div>

@@ -31,11 +31,19 @@ exports.getById = (req, res) => {
 }
 
 exports.create = (req, res) => {
-  const { title, difficulty, durationMin, content, starterCode } = req.body
+  const { title, difficulty, durationMin, content, starterCode, language } = req.body
   if (!title) return res.status(400).json({ error: 'Brak tytułu' })
   const lessons = readData()
   const id = lessons.length ? Math.max(...lessons.map(l => l.id)) + 1 : 1
-  const lesson = { id, title, difficulty: difficulty || 'Łatwy', durationMin: durationMin || 10, content: content || '', starterCode: starterCode || '' }
+  const lesson = { 
+    id, 
+    title, 
+    difficulty: difficulty || 'Łatwy', 
+    durationMin: durationMin || 10, 
+    language: language || 'javascript',
+    content: content || '', 
+    starterCode: starterCode || '' 
+  }
   lessons.push(lesson)
   writeData(lessons)
   res.status(201).json({ lesson })

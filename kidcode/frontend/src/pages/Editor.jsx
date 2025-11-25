@@ -1,25 +1,35 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import api from '../services/api'
+import { executeJS } from '../services/jsExecutor'
+import { executePython, preloadPyodide } from '../services/pythonExecutor'
 
 export default function Editor(){
   const { id } = useParams()
   const [lesson, setLesson] = useState(null)
-  const [code, setCode] = useState('// Ładowanie...')
-  const iframeRef = useRef(null)
+  const [code, setCode] = useState('# Ładowanie...')
   const [output, setOutput] = useState('')
-  const codeAreaRef = useRef(null)
+  const [isRunning, setIsRunning] = useState(false)
+  const [language, setLanguage] = useState('javascript')
 
   // Загрузка урока и сохраненного кода
   useEffect(()=>{
     api.get(`/lessons/${id}`)
       .then(r => {
         setLesson(r.data.lesson)
-        const starterCode = r.data.lesson.starterCode || ''
+        const lessonLanguage = r.data.lesson.language || 'javascript'
+        setLanguage(lessonLanguage)
+        
+        const starterCode = r.data.lesson.starterCode || (lessonLanguage === 'python' ? '# Wprowadź swój kod' : '// Wprowadź swój kod')
         
         // Проверяем, есть ли сохраненный код для этого урока
         const savedCode = localStorage.getItem(`lesson_code_${id}`)
         setCode(savedCode || starterCode)
+
+        // Preload Pyodide if Python lesson
+        if (lessonLanguage === 'python') {
+          preloadPyodide().catch(err => console.error('Failed to preload Pyodide:', err))
+        }
       })
       .catch((err)=> {
         console.error('Error loading lesson:', err)
@@ -44,67 +54,35 @@ export default function Editor(){
     }
   }
 
-  useEffect(()=>{
-    function onMsg(e){
-      if (e.data && e.data.type === 'result') {
-        setOutput(e.data.payload)
-      }
-    }
-    window.addEventListener('message', onMsg)
-    return ()=> window.removeEventListener('message', onMsg)
-  },[])
+  async function runCode(){
+    if (isRunning) return
+    
+    setIsRunning(true)
+    setOutput('⏳ Wykonywanie...')
 
-  function runCode(){
-    const iframe = iframeRef.current
-    if (!iframe) return
-    setOutput('Wykonywanie...')
-    iframe.contentWindow.postMessage({ type: 'run', code }, '*')
-  }
-
-  const iframeSrc = `<!doctype html><html><body><script>
-    window.addEventListener('message', e => {
-      if(e.data && e.data.type === 'run') {
-        const logs = [];
-        const originalLog = console.log;
-        const originalError = console.error;
-        const originalWarn = console.warn;
-        
-        console.log = (...args) => {
-          logs.push(args.map(a => String(a)).join(' '));
-        };
-        console.error = (...args) => {
-          logs.push('ERROR: ' + args.map(a => String(a)).join(' '));
-        };
-        console.warn = (...args) => {
-          logs.push('WARNING: ' + args.map(a => String(a)).join(' '));
-        };
-        
-        try {
-          const result = (function() {
-            "use strict";
-            return eval(e.data.code);
-          })();
-          
-          console.log = originalLog;
-          console.error = originalError;
-          console.warn = originalWarn;
-          
-          let output = logs.join('\\n');
-          if (result !== undefined && logs.length === 0) {
-            output = String(result);
-          }
-          
-          parent.postMessage({type:'result', payload: output || '(brak wyniku)'}, '*');
-        } catch(err) {
-          console.log = originalLog;
-          console.error = originalError;
-          console.warn = originalWarn;
-          
-          parent.postMessage({type:'result', payload: '❌ Błąd:\\n' + err.toString()}, '*');
+    try {
+      if (language === 'python') {
+        const result = await executePython(code)
+        if (result.error) {
+          setOutput(`❌ Błąd:\n${result.error}`)
+        } else {
+          setOutput(result.output || '(brak wyniku)')
+        }
+      } else {
+        // JavaScript
+        const result = await executeJS(code)
+        if (result.error) {
+          setOutput(`❌ Błąd:\n${result.error}`)
+        } else {
+          setOutput(result.output || '(brak wyniku)')
         }
       }
-    });
-  </script></body></html>`
+    } catch (error) {
+      setOutput(`❌ Nieoczekiwany błąd:\n${error.message || error.toString()}`)
+    } finally {
+      setIsRunning(false)
+    }
+  }
 
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto' }}>
@@ -114,14 +92,29 @@ export default function Editor(){
         </Link>
       </div>
 
-      <h2 style={{ marginTop: 0, marginBottom: 8 }}>
-        {lesson ? lesson.title : `Edytor lekcji #${id}`}
-      </h2>
-      {lesson && (
-        <p className="small" style={{ marginBottom: 16, color: '#6b7280' }}>
-          {lesson.difficulty} • {lesson.durationMin} min
-        </p>
-      )}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+        <div>
+          <h2 style={{ marginTop: 0, marginBottom: 8 }}>
+            {lesson ? lesson.title : `Edytor lekcji #${id}`}
+          </h2>
+          {lesson && (
+            <p className="small" style={{ marginBottom: 0, color: '#6b7280' }}>
+              {lesson.difficulty} • {lesson.durationMin} min
+            </p>
+          )}
+        </div>
+        <div style={{ 
+          padding: '6px 12px', 
+          borderRadius: 8, 
+          background: language === 'python' ? '#3776ab20' : '#f7df1e20',
+          color: language === 'python' ? '#3776ab' : '#f0db4f',
+          fontWeight: 600,
+          fontSize: 13,
+          border: `2px solid ${language === 'python' ? '#3776ab' : '#f0db4f'}`
+        }}>
+          {language === 'python' ? '🐍 Python' : '📜 JavaScript'}
+        </div>
+      </div>
 
       <div className="editor-wrap">
         <div className="editor-area">
@@ -132,7 +125,6 @@ export default function Editor(){
             </button>
           </div>
           <textarea 
-            ref={codeAreaRef}
             id="codeArea" 
             value={code}
             onChange={handleCodeChange}
@@ -148,7 +140,14 @@ export default function Editor(){
             }} 
           />
           <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
-            <button className="btn btn-primary" onClick={runCode}>▶️ Uruchom kod</button>
+            <button 
+              className="btn btn-primary" 
+              onClick={runCode}
+              disabled={isRunning}
+              style={{ opacity: isRunning ? 0.6 : 1, cursor: isRunning ? 'not-allowed' : 'pointer' }}
+            >
+              {isRunning ? '⏳ Wykonywanie...' : '▶️ Uruchom kod'}
+            </button>
             <Link to={`/lessons/${id}`}><button className="btn btn-ghost">Powrót</button></Link>
           </div>
         </div>
@@ -161,13 +160,13 @@ export default function Editor(){
             borderRadius: 8,
             minHeight: 100,
             fontFamily: 'Monaco, Consolas, monospace',
-            fontSize: 13
+            fontSize: 13,
+            color: output.startsWith('❌') ? '#ef4444' : '#1f2937'
           }}>
             {output || 'Uruchom kod, aby zobaczyć wynik...'}
           </pre>
         </div>
       </div>
-      <iframe ref={iframeRef} title="sandbox" sandbox="allow-scripts" srcDoc={iframeSrc} style={{ display: 'none' }} />
     </div>
   )
 }

@@ -9,7 +9,7 @@ export default function Admin(){
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [checking, setChecking] = useState(true)
-  const [form, setForm] = useState({ title: '', difficulty: 'Łatwy', durationMin: 10, content: '', starterCode: '' })
+  const [form, setForm] = useState({ title: '', difficulty: 'Łatwy', durationMin: 10, language: 'javascript', content: '', starterCode: '' })
 
   useEffect(()=>{
     try {
@@ -33,7 +33,14 @@ export default function Admin(){
       setLoading(true)
       api.get(`/lessons/${id}`).then(r => {
         const l = r.data.lesson
-        setForm({ title: l.title || '', difficulty: l.difficulty || 'Łatwy', durationMin: l.durationMin || 10, content: l.content || '', starterCode: l.starterCode || '' })
+        setForm({ 
+          title: l.title || '', 
+          difficulty: l.difficulty || 'Łatwy', 
+          durationMin: l.durationMin || 10, 
+          language: l.language || 'javascript',
+          content: l.content || '', 
+          starterCode: l.starterCode || '' 
+        })
       }).catch(()=>{}).finally(()=>setLoading(false))
     }
   },[id])
@@ -46,10 +53,17 @@ export default function Admin(){
   function handleSubmit(e){
     e.preventDefault()
     setLoading(true)
-    const payload = { title: form.title, difficulty: form.difficulty, durationMin: form.durationMin, content: form.content, starterCode: form.starterCode }
+    const payload = { 
+      title: form.title, 
+      difficulty: form.difficulty, 
+      durationMin: form.durationMin, 
+      language: form.language,
+      content: form.content, 
+      starterCode: form.starterCode 
+    }
     const req = id ? api.put(`/lessons/${id}`, payload) : api.post('/lessons', payload)
     req.then(()=> {
-      navigate('/')
+      navigate('/lessons')
     }).catch(err => {
       alert('Błąd zapisu: ' + (err?.response?.data?.error || err.message))
     }).finally(()=> setLoading(false))
@@ -77,6 +91,13 @@ export default function Admin(){
               <option>Trudny</option>
             </select>
           </div>
+          <div style={{ flex: 1 }}>
+            <label> Język programowania</label>
+            <select name="language" value={form.language} onChange={handleChange}>
+              <option value="javascript">JavaScript</option>
+              <option value="python">Python</option>
+            </select>
+          </div>
           <div style={{ width: 140 }}>
             <label> Czas (min)</label>
             <input name="durationMin" type="number" min={1} value={form.durationMin} onChange={handleChange} />
@@ -89,8 +110,18 @@ export default function Admin(){
         </div>
 
         <div className="form-row">
-          <label> Startowy kod (JS)</label>
-          <textarea name="starterCode" value={form.starterCode} onChange={handleChange} style={{ height: 140 }} />
+          <label> Startowy kod ({form.language === 'python' ? 'Python' : 'JavaScript'})</label>
+          <textarea 
+            name="starterCode" 
+            value={form.starterCode} 
+            onChange={handleChange} 
+            style={{ 
+              height: 140, 
+              fontFamily: 'Monaco, Consolas, monospace',
+              fontSize: 13
+            }} 
+            placeholder={form.language === 'python' ? '# Wprowadź kod Python' : '// Wprowadź kod JavaScript'}
+          />
         </div>
 
         <p>
