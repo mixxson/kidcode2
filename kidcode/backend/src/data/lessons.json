@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "Wprowadzenie do programowania",
+    "difficulty": "Łatwy",
+    "durationMin": 10,
+    "content": "<h3>Witaj!</h3><p>W tej lekcji poznasz podstawy: co to jest program i jak komputer wykonuje instrukcje. To krótkie wprowadzenie dla najmłodszych.</p><ul><li>Co to jest program?</li><li>Jak działa komputer?</li><li>Prosty przykład w JavaScript</li></ul>",
+    "starterCode": "console.log('Witaj, świecie!')"
+  },
+  {
+    "id": 3,
+    "title": "Proste instrukcje warunkowe",
+    "difficulty": "Średni",
+    "durationMin": 20,
+    "content": "<h3>Instrukcje warunkowe</h3><p>Nauczymy się używać <code>if</code> i <code>else</code> do podejmowania decyzji w programie.</p><pre><code>const age = 8;\nif (age >= 7) {\n  console.log('Możesz zacząć naukę programowania!')\n} else {\n  console.log('Poczekaj jeszcze chwilę :)')\n}</code></pre>",
+    "starterCode": "const age = 8; console.log(age)"
+  },
+  {
+    "id": 4,
+    "title": "Pętle i powtarzanie",
+    "difficulty": "Średni",
+    "durationMin": 20,
+    "content": "<h3>Pętle</h3><p>Poznasz pętle <code>for</code> i <code>while</code> do powtarzania czynności.</p><pre><code>for (let i = 1; i <= 5; i++) {\n  console.log('Krok', i)\n}</code></pre>",
+    "starterCode": "for (let i = 1; i <= 5; i++) { console.log('Krok', i) }"
+  }
+]

@@ -1,0 +1,4 @@
+[
+  { "id": 1, "title": "Wprowadzenie do programowania", "difficulty": "Łatwy", "durationMin": 10, "content": "<h3>Witaj!</h3><p>W tej lekcji poznasz podstawy: co to jest program i jak komputer wykonuje instrukcje. To krótkie wprowadzenie dla najmłodszych.</p><ul><li>Co to jest program?</li><li>Jak działa komputer?</li><li>Prosty przykład w JavaScript</li></ul>", "starterCode": "console.log('Witaj, świecie!')" },
+  { "id": 2, "title": "Zmienna i typy danych", "difficulty": "Łatwy", "durationMin": 15, "content": "<h3>Zmienna</h3><p>Zmienne przechowują dane. Poznasz: liczby, tekst (string) i wartości logiczne (true/false).</p><pre><code>let x = 5;\nlet name = 'Ala';\nlet isReady = true;</code></pre>", "starterCode": "let x = 5; console.log('x =', x)" }
+]

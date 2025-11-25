@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "email": "lol@gmail.com",
+    "passwordHash": "$2a$08$Ih./9Z5OYKB74macpyPx3.Gfz2IcA3RF1fpkSm2QomadbAyfb3Gw2",
+    "isAdmin": true
+  },
+  {
+    "id": 2,
+    "email": "admin@gmail.com",
+    "passwordHash": "$2a$08$NnwRE8yQ0zwfBFBua6oUD.kxPHlNtANv61LizMb9rnvvHumplZe4W",
+    "isAdmin": false
+  }
+]

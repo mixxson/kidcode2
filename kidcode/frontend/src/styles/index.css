@@ -1,0 +1,93 @@
+/* KidCode — podstawowy motyw (estetyczny, czytelny) */
+:root{
+	/* Calmer, unified accent palette */
+	--bg: #f7f8fb; /* very light */
+	--card: #ffffff;
+	--muted: #6b7280; /* gray */
+	--accent: #477090; /* unified muted blue */
+	--accent-600: #3a5f79; /* slightly darker */
+	--border: #e8ebf0; /* soft border */
+	--success: #7fb29b; /* soft green */
+	/* keep named accents but point them to the same accent for consistency */
+	--accent-2: var(--accent);
+	--accent-3: var(--accent);
+	--accent-4: var(--accent);
+	--bg-gradient: linear-gradient(180deg, #fbfcff 0%, #f7f8fb 100%);
+	--max-width: 1100px;
+}
+
+.container{width:100%;min-height:100vh;margin:0 auto;padding:28px 28px;background:var(--bg-gradient);max-width:var(--max-width)}
+
+html,body,#root{height:100%}
+body{margin:0;padding:0;background:var(--bg);color:#0f172a;font-family:'Poppins', Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;padding:12px 18px;border-radius:10px;background:transparent;color:var(--muted)}
+.brand{font-size:20px;font-weight:700;color:var(--accent);text-decoration:none}
+.nav{display:flex;gap:12px}
+.nav a{color:var(--muted);text-decoration:none;font-weight:600}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;box-shadow:0 6px 18px rgba(16,24,40,0.04)}
+.card.transparent{background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.75))}
+.list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.lesson-item{padding:14px;border-radius:8px;border:1px solid var(--border);background:linear-gradient(180deg, #fff, #fbfdff)}
+.lesson-item{position:relative;overflow:hidden}
+.lesson-item::before{content:'';position:absolute;left:0;top:12px;bottom:12px;width:6px;background:var(--accent);border-top-left-radius:6px;border-bottom-left-radius:6px}
+.lesson-item:nth-child(3n+1)::before{background:var(--accent)}
+.lesson-item:nth-child(3n+2)::before{background:var(--accent)}
+.lesson-item:nth-child(3n+3)::before{background:var(--accent)}
+.lesson-title{font-weight:700;color:#0f172a;text-decoration:none}
+.lesson-meta{font-size:13px;color:var(--muted);margin-top:6px}
+
+.btn{display:inline-block;padding:8px 12px;border-radius:8px;border:1px solid transparent;font-weight:600;cursor:pointer}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 6px 18px rgba(75,95,120,0.06)}
+.btn-outline{background:#fff;border-color:var(--border);color:var(--muted)}
+.btn-ghost{background:transparent;border:1px dashed var(--border);color:var(--muted)}
+.btn.accent-2{background:var(--accent);color:#fff}
+.btn.accent-3{background:var(--accent);color:#fff}
+
+
+form .form-row{margin-bottom:12px}
+label{display:block;font-weight:600;margin-bottom:6px}
+input[type='text'],select,input[type='number'],textarea{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:transparent}
+textarea{font-family:inherit}
+
+.editor-wrap{display:flex;gap:12px}
+.editor-area{flex:1}
+.result-box{width:320px;background:#fff;border-radius:8px;padding:12px;border:1px solid var(--border)}
+
+.small{font-size:13px;color:var(--muted)}
+
+.icon-btn{display:inline-flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer}
+.icon-btn svg{display:block}
+.icon-btn.danger{color:var(--accent-600)}
+.icon-only{padding:6px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center}
+
+.feature-card{color:#fff;border:none;cursor:pointer;transition:transform .18s ease, box-shadow .18s ease, opacity .12s}
+.feature-card:hover{transform:translateY(-6px);box-shadow:0 14px 30px rgba(16,24,40,0.06);opacity:0.98}
+.feature-1,.feature-2,.feature-3{background:linear-gradient(135deg,var(--accent),var(--accent-600));}
+
+
+/* Responsive: tablets and phones */
+@media (max-width:1024px){
+	.container{padding:20px}
+	.list{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+	.editor-wrap{flex-direction:column}
+	.result-box{width:100%}
+}
+
+@media (max-width:720px){
+	.container{padding:14px}
+	.header{flex-direction:column;align-items:flex-start;gap:12px}
+	.nav{gap:10px}
+	.brand{font-size:18px}
+	.list{grid-template-columns:1fr}
+	.lesson-item{padding:12px}
+	.editor-wrap{flex-direction:column}
+	.result-box{width:100%}
+}
+
+@media (max-width:420px){
+	.container{padding:12px}
+	.brand{font-size:16px}
+	.btn{padding:7px 10px}
+}
+
