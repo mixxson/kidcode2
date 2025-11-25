@@ -15,7 +15,7 @@ export default function Login(){
       const r = await api.post('/auth/login', { email, password })
       localStorage.setItem('kidcode_token', r.data.token)
       localStorage.setItem('kidcode_user', JSON.stringify(r.data.user))
-      navigate('/')
+      window.location.href = '/'
     }catch(err){
       alert('Błąd logowania: ' + (err?.response?.data?.error || err.message))
     }finally{ setLoading(false) }

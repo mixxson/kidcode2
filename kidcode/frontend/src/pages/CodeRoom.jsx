@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Box, Flex, Heading, HStack, Button, Select, Text, Spacer, Badge } from '@chakra-ui/react'
+import { Box, Flex, Heading, HStack, Button, Text, Spacer, Badge } from '@chakra-ui/react'
 import Editor from '@monaco-editor/react'
 import { connectSocket, joinRoom, leaveRoom, onRemoteCodeUpdate, sendCodeUpdate } from '../services/socketService'
+import { executeJS } from '../services/jsExecutor'
+import OutputPanel from '../components/OutputPanel'
 
 export default function CodeRoom(){
   const { id } = useParams()
@@ -10,6 +12,9 @@ export default function CodeRoom(){
   const [language, setLanguage] = useState('javascript')
   const [code, setCode] = useState('// Zacznij pisać kod...')
   const [connected, setConnected] = useState(false)
+  const [output, setOutput] = useState([])
+  const [error, setError] = useState(null)
+  const [running, setRunning] = useState(false)
   const versionRef = useRef(0)
   const originRef = useRef('local')
 
@@ -46,38 +51,66 @@ export default function CodeRoom(){
     sendCodeUpdate(roomId, value, versionRef.current)
   }
 
+  async function runCode(){
+    setOutput([])
+    setError(null)
+    setRunning(true)
+    
+    if (language === 'javascript'){
+      try {
+        const result = await executeJS(code)
+        setOutput(result.output || [])
+      } catch(err){
+        setError(err.message)
+      } finally {
+        setRunning(false)
+      }
+    } else {
+      // Python - TODO: integrate Pyodide
+      setError('Python execution not yet implemented. Coming soon!')
+      setRunning(false)
+    }
+  }
+
   return (
     <Flex direction="column" height="calc(100vh - 100px)">
-      <HStack p={3} borderBottom="1px" borderColor="gray.200" spacing={3}>
+      <HStack p={3} borderBottom="1px" borderColor="gray.200" gap={3}>
         <Heading size="md">Pokój #{roomId}</Heading>
-        <Badge colorScheme={connected ? 'green' : 'red'}>
+        <Badge colorPalette={connected ? 'green' : 'red'}>
           {connected ? 'Connected' : 'Disconnected'}
         </Badge>
         <Spacer />
         <Text fontSize="sm" color="gray.500">Język:</Text>
-        <Select size="sm" width="200px" value={language} onChange={(e)=>setLanguage(e.target.value)}>
+        <select style={{padding:'4px 8px', borderRadius:'4px', border:'1px solid #ccc'}} value={language} onChange={(e)=>setLanguage(e.target.value)}>
           <option value="javascript">JavaScript</option>
           <option value="python">Python</option>
-        </Select>
-        <Button size="sm" colorScheme="blue">Uruchom</Button>
+        </select>
+        <Button size="sm" colorPalette="blue" onClick={runCode} loading={running}>
+          {running ? 'Uruchamianie...' : 'Uruchom'}
+        </Button>
       </HStack>
 
-      <Box flex="1 1 auto">
-        <Editor
-          height="100%"
-          defaultLanguage={language === 'python' ? 'python' : 'javascript'}
-          language={language === 'python' ? 'python' : 'javascript'}
-          value={code}
-          onChange={handleChange}
-          theme="vs-dark"
-          options={{
-            minimap: { enabled: false },
-            fontSize: 14,
-            scrollBeyondLastLine: false,
-            wordWrap: 'on',
-          }}
-        />
-      </Box>
+      <Flex flex="1 1 auto" overflow="hidden">
+        <Box flex="1 1 60%" minW="0">
+          <Editor
+            height="100%"
+            defaultLanguage={language === 'python' ? 'python' : 'javascript'}
+            language={language === 'python' ? 'python' : 'javascript'}
+            value={code}
+            onChange={handleChange}
+            theme="vs-dark"
+            options={{
+              minimap: { enabled: false },
+              fontSize: 14,
+              scrollBeyondLastLine: false,
+              wordWrap: 'on',
+            }}
+          />
+        </Box>
+        <Box flex="1 1 40%" minW="0">
+          <OutputPanel output={output} error={error} />
+        </Box>
+      </Flex>
     </Flex>
   )
 }

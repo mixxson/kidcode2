@@ -15,18 +15,38 @@ KidCode to interaktywna platforma edukacyjna do nauki programowania dla dzieci, 
 
 ---
 
-## �️ Notatki z realizacji (Progress)
+## 🗒️ Notatki z realizacji (Progress)
 
 Data: 25 listopada 2025
 
-- Zaimplementowano JWT z rolami (admin/teacher/student), endpointy: register/login/me, zmiana ról dla admina.
-- Dodano Socket.IO na backendzie (HTTP server + integracja, middleware autentykacji po JWT) i kliencie.
-- Utworzono infrastrukturę WebSocket: `backend/src/sockets/index.js` z eventami `room:join`, `room:leave`, `code:update`, `cursor:update` (+ broadcast do pokoju).
-- Dodano system pokoi (rooms): `roomsController`, `rooms.json`, trasy REST: list/get/create/join/delete z kontrolą dostępu.
-- Na froncie: `src/services/socketService.js` (połączenie, join/leave, wysyłka/odbiór zmian kodu).
-- README i .env.example zaktualizowane; skrypt `run-all.sh` dodany dla Linux.
+### ✅ Zrealizowane
+- **JWT Auth:** Zaimplementowano z rolami (admin/teacher/student), endpointy: register/login/me, zmiana ról dla admina.
+- **Socket.IO Backend:** HTTP server + integracja, middleware autentykacji JWT, eventy: `room:join`, `room:leave`, `code:update`, `cursor:update`.
+- **Rooms System:** `roomsController`, `rooms.json`, trasy REST: list/get/create/join/delete z kontrolą dostępu.
+- **Socket.IO Client:** `src/services/socketService.js` (połączenie, join/leave, wysyłka/odbiór zmian kodu).
+- **Chakra UI v3:** Zainstalowano i skonfigurowano `ChakraProvider` z `defaultSystem`.
+- **Monaco Editor:** Dodano `@monaco-editor/react`, utworzono `CodeRoom.jsx` z real-time sync kodu (podstawowa wersja).
+- **RoomsList:** Strona listy pokoi z filtrowaniem według roli (teacher/student), przycisk tworzenia dla nauczycieli.
+- **RoomCreate:** Strona tworzenia pokoju z wyborem ucznia, języka i nazwy (dla teachers/admins).
+- **Navigation:** Dodano link "Pokoje" w navbar dla zalogowanych użytkowników.
+- **Auth Fix:** Login/Register teraz przeładowują stronę (`window.location.href`) aby odświeżyć stan użytkownika.
+- **Admin Guard:** Strona Admin sprawdza localStorage przed renderowaniem.
+- **README:** Zaktualizowano z instrukcjami JWT i .env; skrypt `run-all.sh` dla Linux.
 
-Najbliższe kroki: instalacja biblioteki UI (Chakra/Mantine), podstawowy widok Code Room (edytor + output), kontekst Socket i lepszy reconnect.
+### 🔧 W trakcie
+- Debouncing dla `code:update` (obecnie wysyła przy każdej zmianie).
+- Socket Context z auto-reconnect i toast notifications.
+- Python execution (Pyodide).
+
+### 📋 Następne kroki
+1. Dodać Context dla Socket + reconnect/error handling.
+2. ✅ ~~Implementować JS Executor (Web Worker sandbox)~~ — ZROBIONE
+3. Dodać Pyodide dla Python execution.
+4. ✅ ~~Output Panel z przyciskiem Run~~ — ZROBIONE
+5. ✅ ~~Stworzyć stronę RoomCreate dla nauczycieli~~ — ZROBIONE
+6. Dashboard dla nauczycieli (monitoring aktywnych sesji).
+7. Collaborative cursors w Monaco Editor.
+8. Debouncing dla synchronizacji kodu.
 
 ## �📋 Roadmap – Etapy Realizacji
 
@@ -90,10 +110,10 @@ Najbliższe kroki: instalacja biblioteki UI (Chakra/Mantine), podstawowy widok C
     ```
 
 - [ ] **Frontend: Rooms UI**
-  - Stworzyć `frontend/src/pages/RoomsList.jsx`
-  - Stworzyć `frontend/src/pages/RoomCreate.jsx` (tylko dla nauczycieli)
-  - Stworzyć `frontend/src/components/RoomCard.jsx`
-  - Routing: `/rooms`, `/rooms/new`, `/rooms/:id`
+  - [x] Stworzyć `frontend/src/pages/RoomsList.jsx`
+  - [ ] Stworzyć `frontend/src/pages/RoomCreate.jsx` (tylko dla nauczycieli)
+  - [ ] Stworzyć `frontend/src/components/RoomCard.jsx`
+  - [x] Routing: `/rooms`, `/rooms/:id`
 
 #### 1.3 Synchronizacja Kodu
 - [ ] **Backend: Code Sync Logic**
@@ -107,12 +127,12 @@ Najbliższe kroki: instalacja biblioteki UI (Chakra/Mantine), podstawowy widok C
   - [ ] Operational Transform lub CRDT dla conflict resolution (opcjonalnie: biblioteka Yjs)
 
 - [ ] **Frontend: Code Editor Integration**
-  - Wybrać edytor: **Monaco Editor** (VSCode) lub **CodeMirror 6**
-  - Dodać `@monaco-editor/react` lub `@codemirror/state`
-  - Stworzyć `frontend/src/components/CodeEditor.jsx`
-  - Bindować zmiany kodu do socket events
-  - Pokazywać kursory innych użytkowników (collaborative cursors)
-  - Implementować syntax highlighting dla Python i JavaScript
+  - [x] Wybrać edytor: **Monaco Editor** (VSCode)
+  - [x] Dodać `@monaco-editor/react`
+  - [x] Stworzyć `frontend/src/pages/CodeRoom.jsx` (z edytorem)
+  - [x] Bindować zmiany kodu do socket events (`code:update`, `code:remote-update`)
+  - [ ] Pokazywać kursory innych użytkowników (collaborative cursors)
+  - [x] Syntax highlighting dla Python i JavaScript (Monaco wbudowany)
 
 ---
 
@@ -122,14 +142,13 @@ Najbliższe kroki: instalacja biblioteki UI (Chakra/Mantine), podstawowy widok C
 **Czas realizacji:** 2-3 tygodnie  
 **Cel:** Uruchamianie kodu w przeglądarce
 
-#### 2.1 JavaScript Execution
-- [ ] **Frontend: JS Sandbox**
-  - Stworzyć `frontend/src/services/jsExecutor.js`
-  - Użyć `eval()` w Web Worker dla izolacji
-  - Alternatywa: biblioteka `js-interpreter` dla sandboxingu
-  - Przekierować `console.log` do outputu w UI
-  - Obsłużyć timeout (max 5s wykonania)
-  - Obsłużyć błędy runtime
+#### 2.1 JavaScript Execution ✅
+- [x] **Frontend: JS Sandbox**
+  - [x] Stworzyć `frontend/src/services/jsExecutor.js`
+  - [x] Użyć `eval()` w Web Worker dla izolacji
+  - [x] Przekierować `console.log` do outputu w UI
+  - [x] Obsłużyć timeout (max 5s wykonania)
+  - [x] Obsłużyć błędy runtime
 
 #### 2.2 Python Execution
 - [ ] **Wybór rozwiązania:**
@@ -144,11 +163,11 @@ Najbliższe kroki: instalacja biblioteki UI (Chakra/Mantine), podstawowy widok C
     - Uruchamiać kod w Docker container (timeout, resource limits)
     - Zwracać output przez WebSocket
 
-- [ ] **Frontend: Output Panel**
-  - Stworzyć `frontend/src/components/OutputPanel.jsx`
-  - Pokazywać stdout, stderr, błędy
-  - Czyszczenie outputu przed każdym uruchomieniem
-  - Przycisk "Run Code" / "Uruchom Kod"
+- [x] **Frontend: Output Panel**
+  - [x] Stworzyć `frontend/src/components/OutputPanel.jsx`
+  - [x] Pokazywać stdout, stderr, błędy
+  - [x] Czyszczenie outputu przed każdym uruchomieniem
+  - [x] Przycisk "Run Code" / "Uruchom Kod" w CodeRoom
 
 #### 2.3 Bezpieczeństwo
 - [ ] Zaimplementować rate limiting dla wykonania kodu
@@ -165,20 +184,14 @@ Najbliższe kroki: instalacja biblioteki UI (Chakra/Mantine), podstawowy widok C
 **Cel:** Piękny, przyjazny interfejs
 
 #### 3.1 Design System
-- [ ] **Wybór biblioteki UI:**
-  - **Material-UI (MUI)** – komponenty Material Design
-  - **Chakra UI** – minimalistyczny, accessibility-first
-  - **Tailwind CSS + Headless UI** – full customization
-  - **Mantine** – nowoczesne, bogate komponenty
-  - **Rekomendacja:** Chakra UI lub Mantine
+- [x] **Wybór biblioteki UI:**
+  - ✅ **Chakra UI v3** – wybrany i zainstalowany
+  - Komponenty: Box, Flex, Button, Badge, Heading, HStack, VStack, Spacer, Text, Spinner
 
-- [ ] **Instalacja i konfiguracja:**
-  ```bash
-  cd frontend
-  npm install @chakra-ui/react @emotion/react @emotion/styled framer-motion
-  ```
-  - Skonfigurować theme (kolory, fonty, spacing)
-  - Stworzyć `frontend/src/theme.js`
+- [x] **Instalacja i konfiguracja:**
+  - [x] Zainstalowano: `@chakra-ui/react @emotion/react @emotion/styled framer-motion`
+  - [x] Skonfigurowano `ChakraProvider` z `defaultSystem` w `main.jsx`
+  - [ ] Stworzyć własny theme (kolory, fonty, spacing) – opcjonalnie
 
 #### 3.2 Layout i Nawigacja
 - [ ] **Global Layout**
@@ -414,17 +427,19 @@ Najbliższe kroki: instalacja biblioteki UI (Chakra/Mantine), podstawowy widok C
 
 ## 🏁 Milestones – Quick Wins
 
-### Milestone 1 (2 tygodnie)
+### Milestone 1 (2 tygodnie) ✅ UKOŃCZONE
 - [x] Autentykacja (już gotowe)
 - [x] WebSocket infrastructure (backend + client wrapper)
 - [x] System pokoi (CRUD + uprawnienia)
-- [ ] Basic code editor (Monaco)
+- [x] Basic code editor (Monaco) + real-time sync
+- [x] Chakra UI integration
+- [x] RoomsList page
 
-### Milestone 2 (3 tygodnie)
-- 🔧 Real-time sync kodu
-- 🔧 JavaScript execution
-- 🔧 Python execution (Pyodide)
-- 🔧 Output panel
+### Milestone 2 (3 tygodnie) — 75% ukończone
+- [x] Real-time sync kodu (podstawowa wersja)
+- [x] JavaScript execution (Web Worker sandbox)
+- [ ] Python execution (Pyodide)
+- [x] Output panel
 
 ### Milestone 3 (2 tygodnie)
 - 🎨 UI/UX redesign (Chakra/Mantine)

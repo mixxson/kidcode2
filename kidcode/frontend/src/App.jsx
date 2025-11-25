@@ -6,6 +6,8 @@ import Lesson from './pages/Lesson'
 import Editor from './pages/Editor'
 import Admin from './pages/Admin'
 import CodeRoom from './pages/CodeRoom'
+import RoomsList from './pages/RoomsList'
+import RoomCreate from './pages/RoomCreate'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import './styles/index.css'
@@ -16,8 +18,15 @@ export default function App(){
   useEffect(()=>{
     try{
       const raw = localStorage.getItem('kidcode_user')
-      if (raw) setUser(JSON.parse(raw))
-    }catch(e){ }
+      console.log('App loading user from localStorage:', raw)
+      if (raw) {
+        const userData = JSON.parse(raw)
+        console.log('User data:', userData)
+        setUser(userData)
+      }
+    }catch(e){ 
+      console.error('Error loading user:', e)
+    }
   },[])
 
   function logout(){
@@ -35,6 +44,7 @@ export default function App(){
           <Link to="/" className="brand">KidCode</Link>
           <nav className="nav">
             <Link to="/lessons">Lekcje</Link>
+            {user && <Link to="/rooms">Pokoje</Link>}
             {user && user.isAdmin ? <Link to="/admin">Admin</Link> : null}
             {!user ? (
               <>
@@ -53,6 +63,8 @@ export default function App(){
             <Route path="/lessons" element={<Lessons />} />
             <Route path="/lessons/:id" element={<Lesson />} />
             <Route path="/editor/:id" element={<Editor />} />
+            <Route path="/rooms" element={<RoomsList />} />
+            <Route path="/rooms/new" element={<RoomCreate />} />
             <Route path="/rooms/:id" element={<CodeRoom />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/:id" element={<Admin />} />

@@ -8,15 +8,24 @@ export default function Admin(){
   const { id } = useParams()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const [checking, setChecking] = useState(true)
   const [form, setForm] = useState({ title: '', difficulty: 'Łatwy', durationMin: 10, content: '', starterCode: '' })
 
   useEffect(()=>{
-    // check current user; if not admin, redirect to login
-    api.get('/auth/me').then(r => {
-      if (!r.data.user?.isAdmin) navigate('/login')
-    }).catch(()=> {
+    try {
+      const userStr = localStorage.getItem('kidcode_user')
+      const user = userStr ? JSON.parse(userStr) : null
+      console.log('Admin check:', user)
+      if (!user || !user.isAdmin) {
+        console.log('Not admin, redirecting')
+        navigate('/login')
+        return
+      }
+      setChecking(false)
+    } catch(e) {
+      console.error('Admin check error:', e)
       navigate('/login')
-    })
+    }
   },[]) 
 
   useEffect(()=>{
@@ -44,6 +53,10 @@ export default function Admin(){
     }).catch(err => {
       alert('Błąd zapisu: ' + (err?.response?.data?.error || err.message))
     }).finally(()=> setLoading(false))
+  }
+
+  if (checking) {
+    return <div>Sprawdzanie uprawnień...</div>
   }
 
   return (

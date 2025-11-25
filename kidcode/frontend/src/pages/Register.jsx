@@ -13,10 +13,10 @@ export default function Register(){
     e.preventDefault()
     setLoading(true)
     try{
-      const r = await api.post('/auth/register', { email, password, adminKey })
+      const r = await api.post('/auth/register', { email, password, adminKey, role: 'teacher' })
       localStorage.setItem('kidcode_token', r.data.token)
       localStorage.setItem('kidcode_user', JSON.stringify(r.data.user))
-      navigate('/')
+      window.location.href = '/'
     }catch(err){
       alert('Błąd rejestracji: ' + (err?.response?.data?.error || err.message))
     }finally{ setLoading(false) }
