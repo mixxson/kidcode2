@@ -33,5 +33,40 @@
     "passwordHash": "$2a$08$gUdzFRD9EnG693BjidMaIesUy6tYZNGHJU2PxpULfyeSQnK64OZZe",
     "role": "student",
     "isAdmin": false
+  },
+  {
+    "id": 6,
+    "email": "dsf@mail.com",
+    "passwordHash": "$2a$08$okF5ryuFiXXIAPjRaz5WVOnVe0UhZzSiIOSV3pGAzVsTR85Ve9A1u",
+    "role": "student",
+    "isAdmin": false
+  },
+  {
+    "id": 7,
+    "email": "tymofii@mail.com",
+    "passwordHash": "$2a$08$5y6DQSTMcHsbS6VxVnBb.eOrzJ0RFJNfYOwIluH5ZyFmrenKpI6xq",
+    "role": "student",
+    "isAdmin": false
+  },
+  {
+    "id": 8,
+    "email": "test@mail.com",
+    "passwordHash": "$2a$08$VXI8MKlWOYBpj31pgca1/euQRZ8cT5JG8tq0guQQ13Z.jlzK4LjPK",
+    "role": "student",
+    "isAdmin": false
+  },
+  {
+    "id": 9,
+    "email": "test1@mail.com",
+    "passwordHash": "$2a$08$v.l6JjFtMuPbN4bJU7/Q3.qgicQwNZz9vCFdDA3qNKMarRC6slKQK",
+    "role": "student",
+    "isAdmin": false
+  },
+  {
+    "id": 10,
+    "email": "nauczyczel@mail.com",
+    "passwordHash": "$2a$08$2eN1srq39Koi8KXrHF0VOuKF/f55eaFRAHXKyH3xJWq1N0A2kNg5W",
+    "role": "teacher",
+    "isAdmin": false
   }
 ]

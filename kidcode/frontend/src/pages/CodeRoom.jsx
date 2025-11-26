@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Box, Flex, Heading, HStack, Button, Text, Spacer } from '@chakra-ui/react'
+import { Box, Flex, Heading, HStack, Button, Text, Spacer, Tabs } from '@chakra-ui/react'
 import Editor from '@monaco-editor/react'
 import { useSocket } from '../context/SocketContext'
 import { executeJS } from '../services/jsExecutor'
@@ -17,6 +17,7 @@ export default function CodeRoom(){
   const [output, setOutput] = useState([])
   const [error, setError] = useState(null)
   const [running, setRunning] = useState(false)
+  const [mobileTab, setMobileTab] = useState('editor') // 'editor' or 'output'
   const isRemoteUpdate = useRef(false)
 
   useEffect(()=>{
@@ -110,60 +111,125 @@ export default function CodeRoom(){
   return (
     <>
       <SyncStatus />
-      <Flex direction="column" height="calc(100vh - 100px)">
-        <HStack p={3} borderBottom="1px" borderColor="gray.200" gap={3} flexWrap="wrap">
-          <Heading size="md">Pokój #{roomId}</Heading>
-          <Spacer />
-        <HStack gap={2}>
-          <Text fontSize="sm" color="gray.500">Język:</Text>
-          <HStack gap={1}>
-            <Button 
-              size="sm" 
-              variant={language === 'javascript' ? 'solid' : 'outline'}
-              colorPalette={language === 'javascript' ? 'yellow' : 'gray'}
-              onClick={() => handleLanguageChange('javascript')}
+      <Flex direction="column" height="calc(100vh - 70px)">
+        {/* Header */}
+        <HStack p={3} borderBottom="1px" borderColor="gray.200" gap={3} flexWrap="wrap" bg="white">
+          <Heading size={{ base: 'sm', md: 'md' }}>Pokój #{roomId}</Heading>
+          <Spacer display={{ base: 'none', md: 'block' }} />
+          
+          <HStack gap={2} flexWrap="wrap">
+            <Text fontSize="sm" color="gray.500" display={{ base: 'none', sm: 'block' }}>Język:</Text>
+            <HStack gap={1}>
+              <Button 
+                size={{ base: 'xs', md: 'sm' }}
+                variant={language === 'javascript' ? 'solid' : 'outline'}
+                colorPalette={language === 'javascript' ? 'yellow' : 'gray'}
+                onClick={() => handleLanguageChange('javascript')}
+              >
+                📜 JS
+              </Button>
+              <Button 
+                size={{ base: 'xs', md: 'sm' }}
+                variant={language === 'python' ? 'solid' : 'outline'}
+                colorPalette={language === 'python' ? 'blue' : 'gray'}
+                onClick={() => handleLanguageChange('python')}
+              >
+                🐍 Python
+              </Button>
+            </HStack>
+          </HStack>
+          
+          <Button 
+            size={{ base: 'xs', md: 'sm' }}
+            colorPalette="green" 
+            onClick={runCode} 
+            loading={running} 
+            disabled={!isConnected}
+          >
+            {running ? '⏳' : '▶️'} {running ? 'Uruchamianie...' : 'Uruchom'}
+          </Button>
+        </HStack>
+
+        {/* Mobile: Tabs view */}
+        <Box display={{ base: 'block', lg: 'none' }} flex="1" overflow="hidden">
+          <HStack gap={0} borderBottom="2px" borderColor="gray.200" bg="gray.50">
+            <Button
+              flex="1"
+              variant="ghost"
+              borderRadius="0"
+              borderBottom={mobileTab === 'editor' ? '2px' : 'none'}
+              borderColor="blue.500"
+              colorPalette={mobileTab === 'editor' ? 'blue' : 'gray'}
+              onClick={() => setMobileTab('editor')}
+              size="sm"
             >
-              📜 JS
+              📝 Edytor
             </Button>
-            <Button 
-              size="sm" 
-              variant={language === 'python' ? 'solid' : 'outline'}
-              colorPalette={language === 'python' ? 'blue' : 'gray'}
-              onClick={() => handleLanguageChange('python')}
+            <Button
+              flex="1"
+              variant="ghost"
+              borderRadius="0"
+              borderBottom={mobileTab === 'output' ? '2px' : 'none'}
+              borderColor="blue.500"
+              colorPalette={mobileTab === 'output' ? 'blue' : 'gray'}
+              onClick={() => setMobileTab('output')}
+              size="sm"
             >
-              🐍 Python
+              📤 Wynik
             </Button>
           </HStack>
-        </HStack>
-        <Button size="sm" colorPalette="green" onClick={runCode} loading={running} disabled={!isConnected}>
-          {running ? '⏳ Uruchamianie...' : '▶️ Uruchom kod'}
-        </Button>
-      </HStack>
+          
+          {mobileTab === 'editor' ? (
+            <Box height="calc(100vh - 160px)">
+              <Editor
+                height="100%"
+                language={language === 'python' ? 'python' : 'javascript'}
+                value={code}
+                onChange={handleChange}
+                theme="vs-dark"
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 13,
+                  scrollBeyondLastLine: false,
+                  wordWrap: 'on',
+                  lineNumbers: 'on',
+                  tabSize: language === 'python' ? 4 : 2,
+                  readOnly: false
+                }}
+              />
+            </Box>
+          ) : (
+            <Box height="calc(100vh - 160px)" overflow="auto">
+              <OutputPanel output={output} error={error} />
+            </Box>
+          )}
+        </Box>
 
-      <Flex flex="1 1 auto" overflow="hidden">
-        <Box flex="1 1 60%" minW="0" borderRight="1px" borderColor="gray.200">
-          <Editor
-            height="100%"
-            language={language === 'python' ? 'python' : 'javascript'}
-            value={code}
-            onChange={handleChange}
-            theme="vs-dark"
-            options={{
-              minimap: { enabled: false },
-              fontSize: 14,
-              scrollBeyondLastLine: false,
-              wordWrap: 'on',
-              lineNumbers: 'on',
-              tabSize: language === 'python' ? 4 : 2,
-              readOnly: false // Always allow editing, sync happens in background
-            }}
-          />
-        </Box>
-        <Box flex="1 1 40%" minW="0">
-          <OutputPanel output={output} error={error} />
-        </Box>
+        {/* Desktop: Split view */}
+        <Flex flex="1 1 auto" overflow="hidden" display={{ base: 'none', lg: 'flex' }}>
+          <Box flex="1 1 60%" minW="0" borderRight="1px" borderColor="gray.200">
+            <Editor
+              height="100%"
+              language={language === 'python' ? 'python' : 'javascript'}
+              value={code}
+              onChange={handleChange}
+              theme="vs-dark"
+              options={{
+                minimap: { enabled: false },
+                fontSize: 14,
+                scrollBeyondLastLine: false,
+                wordWrap: 'on',
+                lineNumbers: 'on',
+                tabSize: language === 'python' ? 4 : 2,
+                readOnly: false
+              }}
+            />
+          </Box>
+          <Box flex="1 1 40%" minW="0">
+            <OutputPanel output={output} error={error} />
+          </Box>
+        </Flex>
       </Flex>
-    </Flex>
     </>
   )
 }

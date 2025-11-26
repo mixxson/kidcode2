@@ -17,8 +17,19 @@
     "studentId": 5,
     "lessonId": null,
     "language": "javascript",
-    "code": "// Zacznij pisać kod...\nconsole.log(\"Hello, JavaScript!\")AWSDAADFSFSDFSDFSDFDEDSDFfdsgdfgdfg",
+    "code": "// Zacznij pisać kod...\nconsole.log(\"Hello, JavaScript!\")",
     "createdAt": "2025-11-26T12:43:00.884Z",
+    "active": true
+  },
+  {
+    "id": 3,
+    "name": "Pokój - tymofii@mail.com",
+    "teacherId": 10,
+    "studentId": 7,
+    "lessonId": null,
+    "language": "javascript",
+    "code": "// Zacznij pisać kod...\nconsole.log(\"Hello, JavaScript!sdfsdafdsfsdfdsddsfdsfsdfsdfsdfsdfsdfsdfsdf\")",
+    "createdAt": "2025-11-26T14:39:51.139Z",
     "active": true
   }
 ]
