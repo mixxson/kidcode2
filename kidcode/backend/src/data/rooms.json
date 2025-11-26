@@ -27,9 +27,20 @@
     "teacherId": 10,
     "studentId": 7,
     "lessonId": null,
-    "language": "javascript",
-    "code": "// Zacznij pisać kod...\nconsole.log(\"Hello, JavaScript!sdfsdafdsfsdfdsddsfdsfsdfsdfsdfsdfsdfsdfsdf\")",
+    "language": "python",
+    "code": "# Zacznij pisać kod...\nprint(\"Hello, Python!\")",
     "createdAt": "2025-11-26T14:39:51.139Z",
+    "active": true
+  },
+  {
+    "id": 4,
+    "name": "Pokój - tim@mail.com",
+    "teacherId": 1,
+    "studentId": 11,
+    "lessonId": null,
+    "language": "javascript",
+    "code": "// Zacznij pisać kod...",
+    "createdAt": "2025-11-26T17:26:01.571Z",
     "active": true
   }
 ]

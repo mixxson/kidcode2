@@ -353,7 +353,161 @@ Data: 25 listopada 2025
 
 ---
 
-### 🎁 **Etap 7: Nice-to-Have Features**
+### 📱 **Etap 7: Aplikacja Mobilna (iOS & Android)**
+
+**Priorytet:** Wysoki  
+**Czas realizacji:** 1-2 tygodnie  
+**Cel:** Rozszerzenie platformy na urządzenia mobilne
+
+#### 7.1 Mobile App Setup
+- [ ] **Technology Stack:**
+  - [ ] React Native + Expo (framework mobilny)
+  - [ ] React Navigation (nawigacja w aplikacji)
+  - [ ] React Native Paper lub NativeBase (UI komponenty)
+  - [ ] AsyncStorage (lokalny storage, zamiennik localStorage)
+  - [ ] Expo Notifications (push notifications)
+
+- [ ] **Project Setup:**
+  ```bash
+  npx create-expo-app kidcode-mobile
+  cd kidcode-mobile
+  npm install axios react-navigation @react-navigation/native-stack
+  npm install @react-native-async-storage/async-storage
+  ```
+
+#### 7.2 Screens (Ekrany) - Konwersja z Web
+- [ ] **Authentication Screens:**
+  - [ ] LoginScreen.js (port z Login.jsx)
+  - [ ] RegisterScreen.js (port z Register.jsx)
+  - [ ] SplashScreen.js (loading initial data)
+
+- [ ] **Main Screens:**
+  - [ ] HomeScreen.js (port z Home.jsx)
+  - [ ] LessonsScreen.js (lista lekcji z progress tracking)
+  - [ ] LessonDetailScreen.js (szczegóły lekcji)
+  - [ ] RoomsScreen.js (lista pokoi)
+  - [ ] CodeRoomScreen.js (uproszczona wersja - bez Monaco Editor)
+
+- [ ] **Profile & Settings:**
+  - [ ] ProfileScreen.js (profil użytkownika)
+  - [ ] SettingsScreen.js (ustawienia: notifications, dark mode)
+
+#### 7.3 Core Features - Mobile Adaptation
+- [ ] **API Integration:**
+  - [ ] Skopiować `services/api.js` z web (95% identyczny kod!)
+  - [ ] Zamienić `localStorage` → `AsyncStorage`
+  - [ ] Obsłużyć network errors (offline mode)
+
+- [ ] **Code Editor:**
+  - [ ] **OPCJA A:** Prosty TextInput (multi-line) dla prostych zadań
+  - [ ] **OPCJA B:** react-native-code-editor (lekki syntax highlighting)
+  - [ ] **OPCJA C:** WebView z Monaco Editor (jeśli potrzebna pełna funkcjonalność)
+  - [ ] Syntax highlighting dla Python i JavaScript
+  - [ ] Auto-indent i code formatting
+
+- [ ] **Code Execution:**
+  - [ ] JavaScript: WebView z eval() (podobnie jak w web)
+  - [ ] Python: Pyodide przez WebView lub backend execution
+  - [ ] Output display z scrollable log
+
+- [ ] **Real-time Sync:**
+  - [ ] Socket.IO client (dokładnie taki sam jak w web!)
+  - [ ] Background sync (nawet gdy app w tle)
+  - [ ] Reconnection handling
+
+#### 7.4 Mobile-Specific Features
+- [ ] **Push Notifications:**
+  - [ ] Expo Notifications setup
+  - [ ] Backend: endpoint do rejestracji device tokens
+  - [ ] Notifications types:
+    - [ ] Nauczyciel zaprasza do pokoju
+    - [ ] Nowa lekcja dostępna
+    - [ ] Reminder: "Wróć do nauki!" (daily/weekly)
+    - [ ] Osiągnięcie odblokowane (gamification)
+
+- [ ] **Offline Mode:**
+  - [ ] Cache lekcji w AsyncStorage
+  - [ ] Możliwość czytania lekcji offline
+  - [ ] Sync progress gdy wraca połączenie
+  - [ ] Queue dla offline edits
+
+- [ ] **Native Features:**
+  - [ ] Camera (dla avatar upload - future)
+  - [ ] Share feature (udostępnij postęp)
+  - [ ] Haptic feedback (wibracje przy akcjach)
+  - [ ] Dark mode (system preference)
+
+#### 7.5 Navigation Structure
+```
+App.js
+├─ AuthStack (gdy nie zalogowany)
+│  ├─ LoginScreen
+│  └─ RegisterScreen
+└─ MainStack (gdy zalogowany)
+   ├─ TabNavigator (bottom tabs)
+   │  ├─ HomeTab (HomeScreen)
+   │  ├─ LessonsTab (LessonsScreen)
+   │  ├─ RoomsTab (RoomsScreen)
+   │  └─ ProfileTab (ProfileScreen)
+   └─ StackNavigator (modal screens)
+      ├─ LessonDetailScreen
+      ├─ CodeRoomScreen
+      └─ SettingsScreen
+```
+
+#### 7.6 UI/UX Mobile Design
+- [ ] **Bottom Tab Navigation:**
+  - [ ] Home �
+  - [ ] Lekcje 📚
+  - [ ] Pokoje 🚪
+  - [ ] Profil 👤
+
+- [ ] **Gestures:**
+  - [ ] Swipe do cofnięcia (iOS standard)
+  - [ ] Pull-to-refresh dla list
+  - [ ] Long-press dla akcji kontekstowych
+
+- [ ] **Responsive:**
+  - [ ] Portrait mode (primary)
+  - [ ] Landscape mode (dla code editor)
+  - [ ] Tablet support (split screen)
+
+#### 7.7 Testing
+- [ ] **iOS Testing:**
+  - [ ] Expo Go app (development)
+  - [ ] TestFlight (beta testing)
+  - [ ] App Store submission
+
+- [ ] **Android Testing:**
+  - [ ] Expo Go app (development)
+  - [ ] APK build (internal testing)
+  - [ ] Google Play Console (beta/production)
+
+#### 7.8 Deployment
+- [ ] **iOS:**
+  - [ ] Apple Developer Account ($99/rok)
+  - [ ] EAS Build (Expo Application Services)
+  - [ ] App Store Connect setup
+  - [ ] Screenshots i metadata
+  - [ ] Submit do App Store Review
+
+- [ ] **Android:**
+  - [ ] Google Play Console ($25 jednorazowo)
+  - [ ] EAS Build dla Android
+  - [ ] Play Store listing
+  - [ ] Screenshots i metadata
+  - [ ] Submit do Google Play Review
+
+#### 7.9 Performance & Optimization
+- [ ] Lazy loading dla screens
+- [ ] Image optimization (compress avatars)
+- [ ] Code splitting
+- [ ] Memory management (cleanup listeners)
+- [ ] Battery optimization (limit background sync)
+
+---
+
+### �🎁 **Etap 8: Nice-to-Have Features**
 
 **Priorytet:** Niski  
 **Czas realizacji:** Rozłożone w czasie
@@ -365,8 +519,10 @@ Data: 25 listopada 2025
 - [ ] **Screen sharing:** Nauczyciel pokazuje ekran uczniowi
 - [ ] **Code snippets library:** Gotowe przykłady kodu
 - [ ] **AI Assistant:** ChatGPT integration dla podpowiedzi (OpenAI API)
-- [ ] **Dark mode:** Przełącznik ciemnego motywu
+- [ ] **Dark mode:** Przełącznik ciemnego motywu (WEB + MOBILE)
 - [ ] **Internationalization (i18n):** Wsparcie wielu języków (polski, angielski, rosyjski)
+- [ ] **Apple Watch app:** Quick stats i notifications
+- [ ] **Widget iOS/Android:** Daily lesson reminder na home screen
 
 ---
 
@@ -482,6 +638,17 @@ Data: 25 listopada 2025
 - 🚀 Docker Compose
 - 🚀 Deployment na VPS
 - 🚀 CI/CD pipeline
+
+### Milestone 6 (1-2 tygodnie) - 📱 APLIKACJA MOBILNA
+- [ ] Expo setup + React Native
+- [ ] Konwersja screens z web (Login, Home, Lessons, Rooms)
+- [ ] API integration (ten sam backend!)
+- [ ] Socket.IO client (real-time sync)
+- [ ] Push notifications
+- [ ] Offline mode z AsyncStorage
+- [ ] Code editor mobilny (TextInput lub WebView)
+- [ ] Testing iOS + Android
+- [ ] Deployment do App Store i Google Play
 
 ---
 

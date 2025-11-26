@@ -68,5 +68,12 @@
     "passwordHash": "$2a$08$2eN1srq39Koi8KXrHF0VOuKF/f55eaFRAHXKyH3xJWq1N0A2kNg5W",
     "role": "teacher",
     "isAdmin": false
+  },
+  {
+    "id": 11,
+    "email": "tim@mail.com",
+    "passwordHash": "$2a$08$VdIHGKfzjIzMfEoLNXTFsOnBWtvAfdEGybkAeplXlZ6poh6oYKV5y",
+    "role": "student",
+    "isAdmin": false
   }
 ]
