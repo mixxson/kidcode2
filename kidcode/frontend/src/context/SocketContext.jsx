@@ -16,6 +16,7 @@ export function SocketProvider({ children }) {
   const [isConnected, setIsConnected] = useState(false)
   const [isReconnecting, setIsReconnecting] = useState(false)
   const [connectionError, setConnectionError] = useState(null)
+  const [isSyncing, setIsSyncing] = useState(false)
 
   // Connect to socket
   const connect = useCallback(() => {
@@ -134,24 +135,42 @@ export function SocketProvider({ children }) {
 
   // Debounced code update (to reduce network traffic)
   const debounceTimers = useRef({})
+  const syncTimers = useRef({})
   
   const sendCodeUpdate = useCallback((roomId, code, language) => {
-    if (!socket || !isConnected) {
-      console.warn('Cannot send code: socket not connected')
+    if (!socket) {
+      console.warn('Cannot send code: socket not available')
       return
     }
 
-    // Clear existing timer for this room
+    // Show syncing indicator
+    setIsSyncing(true)
+    
+    // Clear existing timers
     if (debounceTimers.current[roomId]) {
       clearTimeout(debounceTimers.current[roomId])
     }
+    if (syncTimers.current[roomId]) {
+      clearTimeout(syncTimers.current[roomId])
+    }
 
-    // Set new timer
+    // Set new timer with longer delay to batch more changes
     debounceTimers.current[roomId] = setTimeout(() => {
-      socket.emit('code:update', { roomId, code, language })
+      if (socket.connected) {
+        socket.emit('code:update', { roomId, code, language })
+        
+        // Hide syncing indicator after a short delay
+        syncTimers.current[roomId] = setTimeout(() => {
+          setIsSyncing(false)
+          delete syncTimers.current[roomId]
+        }, 300)
+      } else {
+        console.warn('Socket disconnected, update queued')
+        setIsSyncing(false)
+      }
       delete debounceTimers.current[roomId]
-    }, 100) // 100ms debounce
-  }, [socket, isConnected])
+    }, 500) // 500ms debounce - increased from 100ms
+  }, [socket])
 
   // Listen for code updates
   const onCodeUpdate = useCallback((callback) => {
@@ -203,6 +222,7 @@ export function SocketProvider({ children }) {
     isConnected,
     isReconnecting,
     connectionError,
+    isSyncing,
     connect,
     disconnect,
     joinRoom,

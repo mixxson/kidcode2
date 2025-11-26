@@ -8,20 +8,44 @@ export default function RoomCreate(){
   const [studentId, setStudentId] = useState('')
   const [language, setLanguage] = useState('javascript')
   const [loading, setLoading] = useState(false)
-  const [users, setUsers] = useState([])
+  const [loadingStudents, setLoadingStudents] = useState(true)
+  const [students, setStudents] = useState([])
   const navigate = useNavigate()
 
   useEffect(()=>{
-    // Load all users to select student
-    api.get('/auth/me').then(()=>{
-      // For now, just allow manual ID input
-      // In production, fetch list of students
-    }).catch(()=>{})
+    // Load list of students
+    setLoadingStudents(true)
+    api.get('/users/students')
+      .then(r => {
+        setStudents(r.data.students || [])
+        // Auto-select first student if available
+        if (r.data.students && r.data.students.length > 0) {
+          setStudentId(String(r.data.students[0].id))
+          // Auto-generate room name
+          setName(`Pokój - ${r.data.students[0].email}`)
+        }
+      })
+      .catch(err => {
+        console.error('Failed to load students:', err)
+        alert('Nie udało się załadować listy uczniów')
+      })
+      .finally(() => setLoadingStudents(false))
   }, [])
+
+  // Update room name when student changes
+  useEffect(() => {
+    if (studentId && students.length > 0) {
+      const student = students.find(s => s.id === Number(studentId))
+      if (student) {
+        setName(`Pokój - ${student.email}`)
+      }
+    }
+  }, [studentId, students])
 
   async function handleSubmit(e){
     e.preventDefault()
     if (!name || !studentId) return alert('Wypełnij wszystkie pola')
+    if (students.length === 0) return alert('Brak dostępnych uczniów')
     setLoading(true)
     try{
       const r = await api.post('/rooms', { 
@@ -53,16 +77,28 @@ export default function RoomCreate(){
           </Box>
           
           <Box>
-            <Text mb={1} fontWeight="bold">ID Ucznia:</Text>
-            <Input 
-              type="number"
-              placeholder="np. 3" 
-              value={studentId} 
-              onChange={e=>setStudentId(e.target.value)}
-              required
-            />
+            <Text mb={1} fontWeight="bold">Uczeń:</Text>
+            {loadingStudents ? (
+              <Text fontSize="sm" color="gray.500">Ładowanie uczniów...</Text>
+            ) : students.length === 0 ? (
+              <Text fontSize="sm" color="red.500">Brak uczniów w systemie. Najpierw zarejestruj uczniów.</Text>
+            ) : (
+              <select 
+                style={{width:'100%', padding:'8px 12px', borderRadius:'6px', border:'1px solid #ccc'}}
+                value={studentId} 
+                onChange={e=>setStudentId(e.target.value)}
+                required
+              >
+                <option value="">-- Wybierz ucznia --</option>
+                {students.map(s => (
+                  <option key={s.id} value={s.id}>
+                    {s.email} (ID: {s.id})
+                  </option>
+                ))}
+              </select>
+            )}
             <Text fontSize="xs" color="gray.500" mt={1}>
-              Wpisz ID użytkownika-ucznia (znajdziesz w bazie users.json)
+              Wybierz ucznia, dla którego tworzysz pokój
             </Text>
           </Box>
 
@@ -78,7 +114,13 @@ export default function RoomCreate(){
             </select>
           </Box>
 
-          <Button type="submit" colorPalette="green" loading={loading} mt={2}>
+          <Button 
+            type="submit" 
+            colorPalette="green" 
+            loading={loading} 
+            disabled={loadingStudents || students.length === 0}
+            mt={2}
+          >
             {loading ? 'Tworzenie...' : 'Utwórz pokój'}
           </Button>
           <Button variant="outline" onClick={()=>navigate('/rooms')}>

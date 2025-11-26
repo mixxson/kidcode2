@@ -80,3 +80,13 @@ exports.setRole = (req,res) => {
   writeData(users)
   return res.json({ ok: true, user: { id: users[idx].id, email: users[idx].email, role: users[idx].role, isAdmin: users[idx].isAdmin } })
 }
+
+// Get list of students (for teachers/admins creating rooms)
+exports.listStudents = (req, res) => {
+  const users = readData()
+  // Return only students with id and email (no sensitive data)
+  const students = users
+    .filter(u => u.role === 'student')
+    .map(u => ({ id: u.id, email: u.email }))
+  res.json({ students })
+}

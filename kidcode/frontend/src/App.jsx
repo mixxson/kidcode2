@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom'
 import { SocketProvider } from './context/SocketContext'
-import ConnectionStatus from './components/ConnectionStatus'
+import SyncStatus from './components/SyncStatus'
 import Home from './pages/Home'
 import Lessons from './pages/Lessons'
 import Lesson from './pages/Lesson'
@@ -42,7 +42,7 @@ export default function App(){
   return (
     <SocketProvider>
       <BrowserRouter>
-        <ConnectionStatus />
+        <SyncStatus />
         <div className="container">
           <header className="header">
             <Link to="/" className="brand">KidCode</Link>

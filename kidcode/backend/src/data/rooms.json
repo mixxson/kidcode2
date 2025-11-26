@@ -9,5 +9,16 @@
     "code": "// Zacznij pisać kod...",
     "createdAt": "2025-11-25T19:04:06.001Z",
     "active": true
+  },
+  {
+    "id": 2,
+    "name": "Pokój - tymofii",
+    "teacherId": 1,
+    "studentId": 5,
+    "lessonId": null,
+    "language": "javascript",
+    "code": "// Zacznij pisać kod...\nconsole.log(\"Hello, JavaScript!\")AWSDAADFSFSDFSDFSDFDEDSDFfdsgdfgdfg",
+    "createdAt": "2025-11-26T12:43:00.884Z",
+    "active": true
   }
 ]

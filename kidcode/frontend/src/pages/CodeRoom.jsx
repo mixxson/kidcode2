@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Box, Flex, Heading, HStack, Button, Text, Spacer, Badge } from '@chakra-ui/react'
+import { Box, Flex, Heading, HStack, Button, Text, Spacer } from '@chakra-ui/react'
 import Editor from '@monaco-editor/react'
 import { useSocket } from '../context/SocketContext'
 import { executeJS } from '../services/jsExecutor'
 import { executePython } from '../services/pythonExecutor'
 import OutputPanel from '../components/OutputPanel'
+import SyncStatus from '../components/SyncStatus'
 
 export default function CodeRoom(){
   const { id } = useParams()
@@ -40,10 +41,10 @@ export default function CodeRoom(){
       setCode(remoteCode)
       if (remoteLang) setLanguage(remoteLang)
       
-      // Reset flag after a small delay
+      // Reset flag after longer delay to avoid conflicts during typing
       setTimeout(() => {
         isRemoteUpdate.current = false
-      }, 100)
+      }, 600) // Match debounce + buffer
     })
 
     return () => {
@@ -56,6 +57,9 @@ export default function CodeRoom(){
     if (isRemoteUpdate.current) return // Don't send updates that came from remote
     
     setCode(value)
+    
+    // Always allow local editing, even if temporarily disconnected
+    // The debounced update will be sent when connection is restored
     sendCodeUpdate(roomId, value, language)
   }
 
@@ -89,19 +93,27 @@ export default function CodeRoom(){
   }
 
   function handleLanguageChange(newLang) {
+    if (newLang === language) return // Already this language
+    
+    // Reset code to default for new language
+    const newCode = newLang === 'python' ? '# Zacznij pisać kod...\nprint("Hello, Python!")' : '// Zacznij pisać kod...\nconsole.log("Hello, JavaScript!")'
+    
     setLanguage(newLang)
-    // Update room language via socket
-    sendCodeUpdate(roomId, code, newLang)
+    setCode(newCode)
+    setOutput([])
+    setError(null)
+    
+    // Update room language and code via socket
+    sendCodeUpdate(roomId, newCode, newLang)
   }
 
   return (
-    <Flex direction="column" height="calc(100vh - 100px)">
-      <HStack p={3} borderBottom="1px" borderColor="gray.200" gap={3} flexWrap="wrap">
-        <Heading size="md">Pokój #{roomId}</Heading>
-        <Badge colorPalette={isConnected ? 'green' : 'red'} fontSize="xs">
-          {isConnected ? '🟢 Połączony' : '🔴 Rozłączony'}
-        </Badge>
-        <Spacer />
+    <>
+      <SyncStatus />
+      <Flex direction="column" height="calc(100vh - 100px)">
+        <HStack p={3} borderBottom="1px" borderColor="gray.200" gap={3} flexWrap="wrap">
+          <Heading size="md">Pokój #{roomId}</Heading>
+          <Spacer />
         <HStack gap={2}>
           <Text fontSize="sm" color="gray.500">Język:</Text>
           <HStack gap={1}>
@@ -143,7 +155,7 @@ export default function CodeRoom(){
               wordWrap: 'on',
               lineNumbers: 'on',
               tabSize: language === 'python' ? 4 : 2,
-              readOnly: !isConnected
+              readOnly: false // Always allow editing, sync happens in background
             }}
           />
         </Box>
@@ -152,5 +164,6 @@ export default function CodeRoom(){
         </Box>
       </Flex>
     </Flex>
+    </>
   )
 }

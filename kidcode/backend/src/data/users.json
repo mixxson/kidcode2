@@ -26,5 +26,12 @@
     "passwordHash": "$2a$08$45IswBU5H4vmHg07fBtCEeqLW3jcplcheiR3OhTNpymmxFdpCJS5i",
     "role": "student",
     "isAdmin": false
+  },
+  {
+    "id": 5,
+    "email": "tymofii",
+    "passwordHash": "$2a$08$gUdzFRD9EnG693BjidMaIesUy6tYZNGHJU2PxpULfyeSQnK64OZZe",
+    "role": "student",
+    "isAdmin": false
   }
 ]

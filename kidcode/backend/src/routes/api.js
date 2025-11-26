@@ -19,6 +19,9 @@ router.post('/auth/login', users.login);
 router.get('/auth/me', auth.verifyToken, users.me);
 router.put('/auth/role', auth.verifyToken, auth.requireAdmin, users.setRole);
 
+// Users endpoints
+router.get('/users/students', auth.verifyToken, auth.requireRoles('admin','teacher'), users.listStudents);
+
 module.exports = router;
 
 // Rooms endpoints
