@@ -26,11 +26,11 @@ export default function Home(){
     }
   },[])
 
-  const features = [
-    { id: 'lessons', title: 'Interaktywne lekcje', short: 'Krótkie moduły z przykładami i ćwiczeniami.', long: 'Interaktywne lekcje zawierają krótkie wprowadzenia, przykłady i małe zadania praktyczne dla dzieci. Każda lekcja ma starter code oraz opis, który można edytować w panelu administracyjnym.' },
-    { id: 'editor', title: 'Wbudowany edytor', short: 'Uruchamiaj kod w przeglądarce.', long: 'Edytor działa w piaskownicy (iframe) — użytkownik może pisać JavaScript i natychmiast zobaczyć wynik. To bezpieczne środowisko do nauki podstaw.' },
-    { id: 'admin', title: 'Panel administracyjny', short: 'Twórz i edytuj lekcje.', long: 'Panel administracyjny pozwala tworzyć nowe lekcje, edytować istniejące oraz dbać o treści. Dane są zapisywane w pliku JSON podczas developmentu; w produkcji warto użyć bazy danych.' }
-  ]
+    const features = [
+      { id: 'lessons', title: 'Interaktywne lekcje', short: 'Krótkie moduły z przykładami i ćwiczeniami.', long: 'Interaktywne lekcje zawierają krótkie wprowadzenia, przykłady i małe zadania praktyczne dla dzieci. Każda lekcja ma starter code oraz opis, który można edytować w panelu administracyjnym.' },
+      { id: 'editor', title: 'Wbudowany edytor', short: 'Uruchamiaj kod w przeglądarce.', long: 'Edytor działa w piaskownicy (iframe) — użytkownik może pisać JavaScript i natychmiast zobaczyć wynik. To bezpieczne środowisko do nauki podstaw.' },
+      { id: 'admin', title: 'Panel administracyjny', short: 'Twórz i edytuj lekcje.', long: 'Panel administracyjny pozwala tworzyć nowe lekcje, edytować istniejące oraz dbać o treści. Dane są zapisywane w pliku JSON podczas developmentu; w produkcji warto użyć bazy danych.' }
+    ]
   
   useEffect(()=>{
     loadData()
@@ -309,7 +309,6 @@ export default function Home(){
   // Logged-in user view (students)
   return (
     <Box>
-      {/* Welcome Section */}
       <Box mb={6} p={6} bg="white" borderRadius="lg" borderWidth="1px" borderColor="gray.200" boxShadow="sm">
         <Text fontSize="3xl" fontWeight="bold" mb={2}>
           Witaj z powrotem, {user.email?.split('@')[0]}! 👋
@@ -318,158 +317,49 @@ export default function Home(){
           Kontynuuj naukę programowania z interaktywnymi lekcjami!
         </Text>
 
-        <HStack gap={3} flexWrap="wrap">
+        {/* Progress Statistics */}
+        {stats && (
+          <SimpleGrid columns={{ base: 2, md: 4 }} gap={4} mb={6}>
+            <Box p={4} bg="gray.50" borderRadius="lg" borderWidth="1px" borderColor="gray.200">
+              <Text fontSize="2xl" fontWeight="bold" color="blue.600">
+                {stats.total}
+              </Text>
+              <Text fontSize="sm" color="gray.600">📚 Wszystkich lekcji</Text>
+            </Box>
+            <Box p={4} bg="gray.50" borderRadius="lg" borderWidth="1px" borderColor="gray.200">
+              <Text fontSize="2xl" fontWeight="bold" color="gray.600">
+                {stats.new}
+              </Text>
+              <Text fontSize="sm" color="gray.600">🆕 Nowych</Text>
+            </Box>
+            <Box p={4} bg="blue.50" borderRadius="lg" borderWidth="1px" borderColor="blue.200">
+              <Text fontSize="2xl" fontWeight="bold" color="blue.600">
+                {stats.inProgress}
+              </Text>
+              <Text fontSize="sm" color="blue.600">⏳ W trakcie</Text>
+            </Box>
+            <Box p={4} bg="green.50" borderRadius="lg" borderWidth="1px" borderColor="green.200">
+              <Text fontSize="2xl" fontWeight="bold" color="green.600">
+                {stats.completed}
+              </Text>
+              <Text fontSize="sm" color="green.600">✅ Ukończonych</Text>
+            </Box>
+          </SimpleGrid>
+        )}
+
+        <HStack gap={3}>
           <Button onClick={() => window.location.href = '/lessons'} colorPalette="blue" size="md">
-            📚 Wszystkie lekcje
+            📚 Przeglądaj lekcje
           </Button>
           <Button onClick={() => window.location.href = '/rooms'} colorPalette="purple" size="md">
-            🚪 Pokoje
+            🚪 Moje pokoje
           </Button>
         </HStack>
       </Box>
 
-      <SimpleGrid columns={{ base: 1, md: 2 }} gap={6} mb={6}>
-        {/* Lessons Overview */}
-        <Box p={6} bg="white" borderRadius="lg" borderWidth="1px" borderColor="gray.200" boxShadow="sm">
-          <Text fontSize="xl" fontWeight="bold" mb={4}>
-            📚 Podsumowanie lekcji
-          </Text>
-          
-          {loading ? (
-            <Stack gap={3}>
-              <Skeleton height="60px" borderRadius="md" />
-              <Skeleton height="60px" borderRadius="md" />
-            </Stack>
-          ) : (
-            <>
-              <VStack align="stretch" gap={3} mb={4}>
-                <Flex justify="space-between" align="center" p={3} bg="blue.50" borderRadius="md">
-                  <HStack>
-                    <Text fontSize="2xl">📖</Text>
-                    <Text fontWeight="bold">Wszystkich lekcji</Text>
-                  </HStack>
-                  <Text fontSize="2xl" fontWeight="bold" color="blue.600">
-                    {lessons.length}
-                  </Text>
-                </Flex>
-                
-                <Flex justify="space-between" align="center" p={3} bg="gray.50" borderRadius="md">
-                  <HStack>
-                    <Text fontSize="2xl">🆕</Text>
-                    <Text fontWeight="bold">Nowych</Text>
-                  </HStack>
-                  <Text fontSize="2xl" fontWeight="bold" color="gray.600">
-                    {stats?.new || lessons.length - progress.length}
-                  </Text>
-                </Flex>
-                
-                <Flex justify="space-between" align="center" p={3} bg="blue.50" borderRadius="md">
-                  <HStack>
-                    <Text fontSize="2xl">⏳</Text>
-                    <Text fontWeight="bold">W trakcie</Text>
-                  </HStack>
-                  <Text fontSize="2xl" fontWeight="bold" color="blue.600">
-                    {stats?.inProgress || 0}
-                  </Text>
-                </Flex>
-                
-                <Flex justify="space-between" align="center" p={3} bg="green.50" borderRadius="md">
-                  <HStack>
-                    <Text fontSize="2xl">✅</Text>
-                    <Text fontWeight="bold">Ukończonych</Text>
-                  </HStack>
-                  <Text fontSize="2xl" fontWeight="bold" color="green.600">
-                    {stats?.completed || 0}
-                  </Text>
-                </Flex>
-              </VStack>
-              
-              <Button
-                colorPalette="blue"
-                w="100%"
-                onClick={() => window.location.href = '/lessons'}
-              >
-                Zobacz wszystkie lekcje →
-              </Button>
-            </>
-          )}
-        </Box>
-
-        {/* Rooms Overview */}
-        <Box p={6} bg="white" borderRadius="lg" borderWidth="1px" borderColor="gray.200" boxShadow="sm">
-          <Text fontSize="xl" fontWeight="bold" mb={4}>
-            🚪 Pokoje współpracy
-          </Text>
-          
-          {loading ? (
-            <Stack gap={3}>
-              <Skeleton height="60px" borderRadius="md" />
-              <Skeleton height="60px" borderRadius="md" />
-            </Stack>
-          ) : (
-            <>
-              <Box mb={4} p={4} bg="purple.50" borderRadius="md" borderWidth="1px" borderColor="purple.200">
-                <Text fontSize="sm" color="gray.600" mb={2}>
-                  Pokoje pozwalają na wspólną pracę nad kodem w czasie rzeczywistym. 
-                  Nauczyciele mogą tworzyć pokoje dla swoich uczniów!
-                </Text>
-                <Flex justify="space-between" align="center" mt={3}>
-                  <HStack>
-                    <Text fontSize="2xl">👥</Text>
-                    <Text fontWeight="bold">Dostępnych pokoi</Text>
-                  </HStack>
-                  <Text fontSize="2xl" fontWeight="bold" color="purple.600">
-                    {rooms.length}
-                  </Text>
-                </Flex>
-              </Box>
-
-              {rooms.length > 0 ? (
-                <VStack align="stretch" gap={2} mb={4}>
-                  {rooms.slice(0, 3).map(room => (
-                    <Flex 
-                      key={room.id} 
-                      justify="space-between" 
-                      align="center" 
-                      p={3} 
-                      bg="gray.50" 
-                      borderRadius="md"
-                      _hover={{ bg: 'gray.100' }}
-                      cursor="pointer"
-                      onClick={() => window.location.href = `/rooms/${room.id}`}
-                    >
-                      <Box>
-                        <Text fontWeight="bold" fontSize="sm">{room.name}</Text>
-                        <Text fontSize="xs" color="gray.600">
-                          {room.participants?.length || 0} uczestników
-                        </Text>
-                      </Box>
-                      <Text fontSize="lg">→</Text>
-                    </Flex>
-                  ))}
-                </VStack>
-              ) : (
-                <Text fontSize="sm" color="gray.600" mb={4}>
-                  Brak aktywnych pokoi. Poczekaj, aż nauczyciel utworzy pokój!
-                </Text>
-              )}
-              
-              <Button
-                colorPalette="purple"
-                w="100%"
-                onClick={() => window.location.href = '/rooms'}
-              >
-                Zobacz wszystkie pokoje →
-              </Button>
-            </>
-          )}
-        </Box>
-      </SimpleGrid>
-
-      {/* Recent Lessons */}
       <Box p={6} bg="white" borderRadius="lg" borderWidth="1px" borderColor="gray.200" boxShadow="sm">
-        <Text fontSize="xl" fontWeight="bold" mb={4}>
-          🎯 Rozpocznij naukę
+        <Text fontSize="2xl" fontWeight="bold" mb={4}>
+          � Twoje lekcje
         </Text>
         
         {loading && (
@@ -488,52 +378,49 @@ export default function Home(){
         
         {!loading && lessons.length > 0 && (
           <Stack gap={3}>
-            {lessons.slice(0, 5).map(l => {
-              const status = getLessonStatus(l.id)
-              const statusInfo = {
-                'new': { icon: '🆕', text: 'Nowa', color: 'gray.600' },
-                'in-progress': { icon: '⏳', text: 'W trakcie', color: 'blue.600' },
-                'completed': { icon: '✅', text: 'Ukończona', color: 'green.600' }
-              }[status]
-
-              return (
-                <Box
-                  key={l.id}
-                  p={4}
-                  bg="gray.50"
-                  borderRadius="md"
-                  borderWidth="1px"
-                  borderColor="gray.200"
-                  _hover={{ borderColor: 'blue.300', boxShadow: 'sm' }}
-                  transition="all 0.2s"
-                >
-                  <Flex justify="space-between" align="center" flexWrap="wrap" gap={3}>
-                    <Box flex="1" minW="200px">
-                      <HStack mb={1}>
-                        <Text fontWeight="bold" color="blue.600" cursor="pointer" onClick={() => window.location.href = `/lessons/${l.id}`}>
-                          {l.title}
-                        </Text>
-                        <Text fontSize="xs" color={statusInfo.color}>
-                          {statusInfo.icon} {statusInfo.text}
-                        </Text>
-                      </HStack>
-                      <Text fontSize="sm" color="gray.600">
-                        {l.difficulty} • {l.language === 'python' ? '🐍 Python' : '📜 JavaScript'} • {l.durationMin} min
-                      </Text>
-                    </Box>
-                    
-                    <Button
-                      size="sm"
-                      colorPalette={status === 'completed' ? 'green' : 'blue'}
-                      onClick={() => window.location.href = `/lessons/${l.id}`}
-                    >
-                      {status === 'new' ? 'Rozpocznij →' : status === 'in-progress' ? 'Kontynuuj →' : 'Powtórz'}
-                    </Button>
-                  </Flex>
-                </Box>
-              )
-            })}
+            {lessons.slice(0, 5).map(l => (
+              <Box
+                key={l.id}
+                p={4}
+                bg="gray.50"
+                borderRadius="md"
+                borderWidth="1px"
+                borderColor="gray.200"
+                _hover={{ borderColor: 'blue.300', boxShadow: 'sm' }}
+                transition="all 0.2s"
+              >
+                <Flex justify="space-between" align="center">
+                  <Box>
+                    <Text fontWeight="bold" color="blue.600" cursor="pointer" onClick={() => window.location.href = `/lessons/${l.id}`}>
+                      {l.title}
+                    </Text>
+                    <Text fontSize="sm" color="gray.600" mt={1}>
+                      {l.difficulty} — {l.durationMin} min
+                    </Text>
+                  </Box>
+                  
+                  <Button
+                    size="sm"
+                    colorPalette="blue"
+                    onClick={() => window.location.href = `/lessons/${l.id}`}
+                  >
+                    Rozpocznij →
+                  </Button>
+                </Flex>
+              </Box>
+            ))}
           </Stack>
+        )}
+        {lessons.length > 5 && (
+          <Box mt={4}>
+            <Button
+              colorPalette="blue"
+              variant="outline"
+              onClick={() => window.location.href = '/lessons'}
+            >
+              Zobacz wszystkie lekcje ({lessonCount}) →
+            </Button>
+          </Box>
         )}
       </Box>
     </Box>

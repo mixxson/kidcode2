@@ -3,6 +3,7 @@ const router = express.Router();
 const lessons = require('../controllers/lessonsController');
 const users = require('../controllers/usersController');
 const rooms = require('../controllers/roomsController');
+const progress = require('../controllers/progressController');
 const auth = require('../middleware/auth');
 
 router.get('/health', (req, res) => res.json({ status: 'ok', service: 'kidcode-backend' }));
@@ -21,6 +22,12 @@ router.put('/auth/role', auth.verifyToken, auth.requireAdmin, users.setRole);
 
 // Users endpoints
 router.get('/users/students', auth.verifyToken, auth.requireRoles('admin','teacher'), users.listStudents);
+
+// Progress endpoints
+router.get('/progress', auth.verifyToken, progress.getUserProgress);
+router.get('/progress/statistics', auth.verifyToken, progress.getStatistics);
+router.get('/progress/:lessonId', auth.verifyToken, progress.getLessonProgress);
+router.put('/progress/:lessonId', auth.verifyToken, progress.updateProgress);
 
 module.exports = router;
 

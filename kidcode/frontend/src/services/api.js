@@ -11,4 +11,12 @@ api.interceptors.request.use(cfg => {
 	return cfg
 })
 
+// Progress API methods
+export const progressAPI = {
+	getUserProgress: () => api.get('/progress'),
+	getLessonProgress: (lessonId) => api.get(`/progress/${lessonId}`),
+	updateLessonProgress: (lessonId, status) => api.put(`/progress/${lessonId}`, { status }),
+	getStatistics: () => api.get('/progress/statistics')
+}
+
 export default api
