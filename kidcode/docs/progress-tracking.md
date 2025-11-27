@@ -1,30 +1,30 @@
-# Progress Tracking System
+# System Śledzenia Postępów
 
-## Описание
-Система отслеживания прогресса позволяет каждому пользователю сохранять статус прохождения каждой лекции. Это делает обучение более интерактивным и мотивирующим.
+## Opis
+System śledzenia postępów pozwala każdemu użytkownikowi zapisywać status ukończenia każdej lekcji. Sprawia to, że nauka jest bardziej interaktywna i motywująca.
 
-## Статусы лекций
-- **🆕 Nowa (new)** - лекция еще не начата
-- **⏳ W trakcie (in-progress)** - лекция начата, но не завершена
-- **✅ Zakończona (completed)** - лекция полностью пройдена
+## Statusy lekcji
+- **🆕 Nowa (new)** - lekcja jeszcze nie rozpoczęta
+- **⏳ W trakcie (in-progress)** - lekcja rozpoczęta, ale nie ukończona
+- **✅ Zakończona (completed)** - lekcja całkowicie ukończona
 
-## Функционал
+## Funkcjonalność
 
 ### Backend API
-**Endpoints:**
-- `GET /api/progress` - получить весь прогресс пользователя
-- `GET /api/progress/statistics` - получить статистику (кол-во новых/в процессе/завершённых)
-- `GET /api/progress/:lessonId` - получить прогресс по конкретной лекции
-- `PUT /api/progress/:lessonId` - обновить статус лекции (body: `{status: "new"|"in-progress"|"completed"}`)
+**Endpointy:**
+- `GET /api/progress` - pobrać cały postęp użytkownika
+- `GET /api/progress/statistics` - pobrać statystyki (liczba nowych/w trakcie/ukończonych)
+- `GET /api/progress/:lessonId` - pobrać postęp konkretnej lekcji
+- `PUT /api/progress/:lessonId` - zaktualizować status lekcji (body: `{status: "new"|"in-progress"|"completed"}`)
 
-**Автоматические метки времени:**
-- `startedAt` - устанавливается при первом переходе в статус "in-progress"
-- `completedAt` - устанавливается при переходе в статус "completed"
-- `updatedAt` - обновляется при каждом изменении
+**Automatyczne znaczniki czasu:**
+- `startedAt` - ustawiany przy pierwszym przejściu do statusu "in-progress"
+- `completedAt` - ustawiany przy przejściu do statusu "completed"
+- `updatedAt` - aktualizowany przy każdej zmianie
 
-**Хранилище:**
-- Файл: `/backend/src/data/progress.json`
-- Структура: массив объектов `{userId, lessonId, status, startedAt, completedAt, createdAt, updatedAt}`
+**Przechowywanie:**
+- Plik: `/backend/src/data/progress.json`
+- Struktura: tablica obiektów `{userId, lessonId, status, startedAt, completedAt, createdAt, updatedAt}`
 
 ### Frontend
 
@@ -41,15 +41,15 @@
   - "Kontynuuj →" для начатых
   - "Powtórz" для завершённых
 
-#### Страница Lesson (`/lessons/:id`)
-- **Бейдж статуса** в заголовке
-- **Автоматическое обновление:**
-  - При нажатии "Rozpocznij kodowanie" статус меняется на "in-progress"
-- **Кнопка "Oznacz jako zakończoną"** для ручного завершения
-- **Индикатор завершения:** "🎉 Lekcja ukończona!" для завершённых
+#### Strona Lesson (`/lessons/:id`)
+- **Znacznik statusu** w nagłówku
+- **Automatyczna aktualizacja:**
+  - Przy naciśnięciu "Rozpocznij kodowanie" status zmienia się na "in-progress"
+- **Przycisk "Oznacz jako zakończoną"** do ręcznego ukończenia
+- **Wskaźnik ukończenia:** "🎉 Lekcja ukończona!" dla ukończonych
 
-#### Главная страница (`/`)
-**Для студентов добавлена статистика:**
+#### Strona główna (`/`)
+**Dla studentów dodana statystyka:**
 ```
 📚 Wszystkich lekcji: X
 🆕 Nowych: X
@@ -57,49 +57,49 @@
 ✅ Ukończonych: X
 ```
 
-## Использование
+## Użytkowanie
 
-### Для пользователя:
-1. Перейти на страницу `/lessons`
-2. Выбрать лекцию и нажать "Rozpocznij"
-3. Статус автоматически изменится на "W trakcie"
-4. После изучения нажать "Oznacz jako zakończoną"
-5. Использовать вкладки для фильтрации лекций по статусу
+### Dla użytkownika:
+1. Przejść na stronę `/lessons`
+2. Wybrać lekcję i nacisnąć "Rozpocznij"
+3. Status automatycznie zmieni się na "W trakcie"
+4. Po ukończeniu nacisnąć "Oznacz jako zakończoną"
+5. Używać zakładek do filtrowania lekcji według statusu
 
-### Для разработчика:
+### Dla programisty:
 ```javascript
 import { progressAPI } from '../services/api'
 
-// Получить прогресс пользователя
+// Pobrać postęp użytkownika
 const res = await progressAPI.getUserProgress()
 const progress = res.data.progress
 
-// Обновить статус лекции
+// Zaktualizować status lekcji
 await progressAPI.updateLessonProgress(lessonId, 'completed')
 
-// Получить статистику
+// Pobrać statystyki
 const statsRes = await progressAPI.getStatistics()
 const stats = statsRes.data.statistics // {total, new, inProgress, completed}
 ```
 
-## Технические детали
+## Szczegóły techniczne
 
-### Требования:
-- Пользователь должен быть авторизован (JWT token в localStorage)
-- Middleware `auth.verifyToken` проверяет токен на всех endpoints
+### Wymagania:
+- Użytkownik musi być zalogowany (JWT token w localStorage)
+- Middleware `auth.verifyToken` sprawdza token na wszystkich endpointach
 
-### Валидация:
-- Статус должен быть одним из: `"new"`, `"in-progress"`, `"completed"`
-- При неверном статусе API вернёт 400 Bad Request
+### Walidacja:
+- Status musi być jednym z: `"new"`, `"in-progress"`, `"completed"`
+- Przy nieprawidłowym statusie API zwróci 400 Bad Request
 
-### Безопасность:
-- Каждый пользователь видит только свой прогресс
-- userId берётся из JWT токена (req.user.id)
-- Невозможно изменить прогресс другого пользователя
+### Bezpieczeństwo:
+- Każdy użytkownik widzi tylko swój postęp
+- userId jest pobierane z tokena JWT (req.user.id)
+- Niemożliwe jest zmienienie postępu innego użytkownika
 
-## Будущие улучшения:
-- [ ] Процент прохождения каждой лекции
-- [ ] Таймер времени, проведённого на лекции
-- [ ] Достижения и награды
-- [ ] График прогресса по неделям/месяцам
-- [ ] Экспорт статистики
+## Przyszłe ulepszenia:
+- [ ] Procent ukończenia każdej lekcji
+- [ ] Timer czasu spędzonego na lekcji
+- [ ] Osiągnięcia i nagrody
+- [ ] Wykres postępów po tygodniach/miesiącach
+- [ ] Eksport statystyk

@@ -1,21 +1,21 @@
-# 🔧 Настройка IP адреса для мобильного приложения
+# 🔧 Konfiguracja adresu IP dla aplikacji mobilnej
 
-## Почему нужно менять IP?
+## Dlaczego trzeba zmienić IP?
 
-Мобильное приложение (телефон/эмулятор) не может использовать `localhost` для подключения к backend серверу на вашем компьютере. Нужно использовать реальный IP адрес вашего компьютера в локальной сети.
+Aplikacja mobilna (telefon/emulator) nie może używać `localhost` do połączenia z serwerem backend na Twoim komputerze. Należy użyć rzeczywistego adresu IP Twojego komputera w sieci lokalnej.
 
-## Шаг 1: Найти свой IP адрес
+## Krok 1: Znajdź swój adres IP
 
 ### Linux / macOS:
 
 ```bash
-# Способ 1 (рекомендуемый)
+# Sposób 1 (zalecany)
 ifconfig | grep "inet " | grep -v 127.0.0.1
 
-# Способ 2
+# Sposób 2
 ip addr show | grep "inet "
 
-# Ищите строку типа:
+# Szukaj linii typu:
 # inet 192.168.1.100 netmask 0xffffff00 broadcast 192.168.1.255
 ```
 
@@ -24,20 +24,20 @@ ip addr show | grep "inet "
 ```cmd
 ipconfig
 
-# Ищите строку:
+# Szukaj linii:
 # IPv4 Address. . . . . . . . . . . : 192.168.1.100
 ```
 
-### Результат:
-Ваш IP будет выглядеть примерно так:
+### Wynik:
+Twój IP będzie wyglądał mniej więcej tak:
 - `192.168.1.100`
 - `192.168.0.105`
 - `10.0.0.25`
 - `172.16.0.50`
 
-## Шаг 2: Обновить конфигурацию
+## Krok 2: Zaktualizuj konfigurację
 
-Открой файл **`src/config.js`** и замени IP:
+Otwórz plik **`src/config.js`** i zmień IP:
 
 ```javascript
 export const Config = {
@@ -48,149 +48,149 @@ export const Config = {
 };
 ```
 
-### Пример:
-Если твой IP: `192.168.0.105`, то:
+### Przykład:
+Jeśli Twój IP to: `192.168.0.105`, to:
 
 ```javascript
 API_URL: 'http://192.168.0.105:4000/api',
 ```
 
-## Шаг 3: Проверить подключение
+## Krok 3: Sprawdź połączenie
 
-### Убедись что backend запущен:
+### Upewnij się, że backend jest uruchomiony:
 
 ```bash
 cd ../backend
 npm run dev
 
-# Должно показать:
+# Powinno pokazać:
 # Server running on port 4000
 # SocketIO listening on port 4000
 ```
 
-### Проверь доступность из сети:
+### Sprawdź dostępność z sieci:
 
 ```bash
-# С твоего компьютера:
-curl http://ТВОЙ_IP:4000/api/health
+# Z Twojego komputera:
+curl http://TWOJE_IP:4000/api/health
 
-# Должно вернуть:
+# Powinno zwrócić:
 # {"status":"ok","service":"kidcode-backend"}
 ```
 
-## Шаг 4: Запустить мобильное приложение
+## Krok 4: Uruchom aplikację mobilną
 
 ```bash
 cd kidcode-mobile
 npm start
 ```
 
-Затем:
-- Сканируй QR code в Expo Go app
-- Или нажми `a` для Android emulator
-- Или нажми `i` для iOS simulator
+Następnie:
+- Zeskanuj kod QR w aplikacji Expo Go
+- Lub naciśnij `a` dla emulatora Android
+- Lub naciśnij `i` dla symulatora iOS
 
-## Проблемы и решения
+## Problemy i rozwiązania
 
-### ❌ "Network Error" или "Connection refused"
+### ❌ "Network Error" lub "Connection refused"
 
-**Причины:**
-1. Backend не запущен
-2. Неправильный IP адрес
-3. Firewall блокирует порт 4000
-4. Телефон и компьютер в разных сетях
+**Przyczyny:**
+1. Backend nie jest uruchomiony
+2. Nieprawidłowy adres IP
+3. Firewall blokuje port 4000
+4. Telefon i komputer są w różnych sieciach
 
-**Решение:**
+**Rozwiązanie:**
 ```bash
-# 1. Проверь backend
+# 1. Sprawdź backend
 cd backend && npm run dev
 
-# 2. Проверь IP снова
+# 2. Sprawdź IP ponownie
 ifconfig | grep "inet " | grep -v 127.0.0.1
 
-# 3. Отключи firewall (временно для теста):
+# 3. Wyłącz firewall (tymczasowo do testów):
 # Linux:
 sudo ufw disable
 # macOS:
 sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
 
-# 4. Убедись что оба устройства в одной WiFi сети
+# 4. Upewnij się, że oba urządzenia są w tej samej sieci WiFi
 ```
 
 ### ❌ "Request timeout"
 
-**Решение:**
-- Увеличь timeout в `src/config.js`:
+**Rozwiązanie:**
+- Zwiększ timeout w `src/config.js`:
 ```javascript
-API_TIMEOUT: 30000, // 30 seconds
+API_TIMEOUT: 30000, // 30 sekund
 ```
 
 ### ❌ "Unable to resolve host"
 
-**Решение:**
-- Проверь правописание IP
-- Убедись что нет опечаток в `src/config.js`
-- Перезапусти Expo: `npm start` → `r` (reload)
+**Rozwiązanie:**
+- Sprawdź pisownię IP
+- Upewnij się, że nie ma literówek w `src/config.js`
+- Zrestartuj Expo: `npm start` → `r` (reload)
 
-## Быстрый тест
+## Szybki test
 
-После настройки IP, проверь что все работает:
+Po skonfigurowaniu IP, sprawdź czy wszystko działa:
 
-1. **Backend работает:**
+1. **Backend działa:**
    ```bash
-   curl http://ТВОЙ_IP:4000/api/health
+   curl http://TWOJE_IP:4000/api/health
    ```
 
-2. **Можешь зарегистрироваться:**
+2. **Możesz się zarejestrować:**
    ```bash
-   curl -X POST http://ТВОЙ_IP:4000/api/auth/register \
+   curl -X POST http://TWOJE_IP:4000/api/auth/register \
      -H "Content-Type: application/json" \
      -d '{"email":"test@test.com","password":"test123"}'
    ```
 
-3. **App подключается:**
-   - Открой app
-   - Попробуй зарегистрироваться
-   - Если видишь "Błąd logowania" - backend работает!
-   - Если видишь "Network Error" - проблемы с подключением
+3. **App łączy się:**
+   - Otwórz app
+   - Spróbuj się zarejestrować
+   - Jeśli widzisz "Błąd logowania" - backend działa!
+   - Jeśli widzisz "Network Error" - problemy z połączeniem
 
-## Дополнительные советы
+## Dodatkowe wskazówki
 
-### Для разработки на эмуляторе:
+### Do rozwoju na emulatorze:
 
 **Android Emulator:**
-- Можешь использовать `10.0.2.2` вместо реального IP
-- Это специальный alias для localhost хоста
+- Możesz używać `10.0.2.2` zamiast rzeczywistego IP
+- To specjalny alias dla localhost hosta
 
 **iOS Simulator:**
-- Можешь использовать `localhost` или реальный IP
-- Оба варианта работают
+- Możesz używać `localhost` lub rzeczywisty IP
+- Oba warianty działają
 
-### Для тестирования на реальном устройстве:
+### Do testowania na prawdziwym urządzeniu:
 
-- **Обязательно** используй реальный IP (не localhost!)
-- Телефон и компьютер **должны быть в одной WiFi сети**
-- Если используешь Mobile Data - не будет работать (нужен VPN или ngrok)
+- **Obowiązkowo** używaj rzeczywistego IP (nie localhost!)
+- Telefon i komputer **muszą być w tej samej sieci WiFi**
+- Jeśli używasz Mobile Data - nie będzie działać (potrzebny VPN lub ngrok)
 
-## Альтернативный вариант: ngrok
+## Wariant alternatywny: ngrok
 
-Если не можешь подключиться через локальную сеть, используй ngrok:
+Jeśli nie możesz połączyć się przez sieć lokalną, użyj ngrok:
 
 ```bash
-# Установи ngrok
+# Zainstaluj ngrok
 npm install -g ngrok
 
-# Запусти backend на порту 4000
+# Uruchom backend na porcie 4000
 cd backend && npm run dev
 
-# В другом терминале:
+# W innym terminalu:
 ngrok http 4000
 
-# Скопируй URL типа: https://abc123.ngrok.io
-# И используй в config.js:
+# Skopiuj URL typu: https://abc123.ngrok.io
+# I użyj w config.js:
 API_URL: 'https://abc123.ngrok.io/api',
 ```
 
 ---
 
-Готово! Теперь твое мобильное приложение может подключиться к backend! 🎉
+Gotowe! Teraz Twoja aplikacja mobilna może połączyć się z backend! 🎉
