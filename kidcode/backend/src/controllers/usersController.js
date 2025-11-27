@@ -90,3 +90,41 @@ exports.listStudents = (req, res) => {
     .map(u => ({ id: u.id, email: u.email }))
   res.json({ students })
 }
+
+// Admin-only: Get all users
+exports.listAll = (req, res) => {
+  const users = readData()
+  // Return user info without password hash
+  const allUsers = users.map(u => ({
+    id: u.id,
+    email: u.email,
+    role: u.role,
+    isAdmin: u.isAdmin
+  }))
+  res.json({ users: allUsers })
+}
+
+// Admin-only: Delete user
+exports.deleteUser = (req, res) => {
+  const userId = Number(req.params.id)
+  if (!userId) return res.status(400).json({ error: 'Invalid user ID' })
+  
+  // Prevent admin from deleting themselves
+  if (userId === req.user.id) {
+    return res.status(400).json({ error: 'Cannot delete your own account' })
+  }
+  
+  const users = readData()
+  const idx = users.findIndex(u => u.id === userId)
+  if (idx === -1) return res.status(404).json({ error: 'User not found' })
+  
+  const deletedUser = users[idx]
+  users.splice(idx, 1)
+  writeData(users)
+  
+  res.json({ 
+    ok: true, 
+    message: `User ${deletedUser.email} deleted`,
+    deletedUser: { id: deletedUser.id, email: deletedUser.email }
+  })
+}

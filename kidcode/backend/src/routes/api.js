@@ -22,6 +22,8 @@ router.put('/auth/role', auth.verifyToken, auth.requireAdmin, users.setRole);
 
 // Users endpoints
 router.get('/users/students', auth.verifyToken, auth.requireRoles('admin','teacher'), users.listStudents);
+router.get('/users', auth.verifyToken, auth.requireAdmin, users.listAll);
+router.delete('/users/:id', auth.verifyToken, auth.requireAdmin, users.deleteUser);
 
 // Progress endpoints
 router.get('/progress', auth.verifyToken, progress.getUserProgress);

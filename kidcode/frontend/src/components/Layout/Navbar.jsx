@@ -60,11 +60,11 @@ export default function Navbar() {
         justify="space-between"
       >
         {/* Logo */}
-        <Link asChild _hover={{ textDecoration: 'none' }}>
+        <Link asChild _hover={{ textDecoration: 'none' }} flexShrink={0}>
           <RouterLink to="/">
             <HStack gap={2}>
               <Text 
-                fontSize="2xl" 
+                fontSize={{ base: 'xl', md: '2xl' }}
                 fontWeight="bold" 
                 bgGradient="to-r" 
                 gradientFrom="blue.500" 
@@ -78,16 +78,18 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Navigation */}
-        <HStack gap={1} display={{ base: 'none', md: 'flex' }}>
+        <HStack gap={1} display={{ base: 'none', lg: 'flex' }} flex={1} justify="center">
           {user && (user.role === 'teacher' || user.isAdmin) && (
             <NavLink to="/dashboard" isActive={isActive('/dashboard')}>
               📊 Dashboard
             </NavLink>
           )}
           
-          <NavLink to="/lessons" isActive={isActive('/lessons')}>
-            📚 Lekcje
-          </NavLink>
+          {user && (
+            <NavLink to="/lessons" isActive={isActive('/lessons')}>
+              📚 Lekcje
+            </NavLink>
+          )}
           
           {user && (
             <NavLink to="/rooms" isActive={isActive('/rooms')}>
@@ -103,7 +105,7 @@ export default function Navbar() {
         </HStack>
 
         {/* User Menu / Auth Buttons */}
-        <HStack gap={2} display={{ base: 'none', md: 'flex' }}>
+        <HStack gap={2} display={{ base: 'none', lg: 'flex' }} flexShrink={0}>
           {!user ? (
             <>
               <Button 
@@ -126,20 +128,21 @@ export default function Navbar() {
           ) : (
             <HStack gap={2}>
               <Box 
-                px={3}
+                px={2}
                 py={1.5}
                 bg="gray.50"
                 borderRadius="md"
                 fontSize="sm"
                 borderWidth="1px"
                 borderColor="gray.200"
+                minW="100px"
               >
-                <Text fontWeight="medium" fontSize="xs" color="gray.600">
+                <Text fontWeight="medium" fontSize="xs" color="gray.600" noOfLines={1}>
                   {user.isAdmin || user.role === 'admin' ? '👑 Admin' : 
                    user.role === 'teacher' ? '👨‍🏫 Nauczyciel' : 
                    '👨‍🎓 Uczeń'}
                 </Text>
-                <Text fontSize="xs" color="gray.500" mt={0.5}>
+                <Text fontSize="xs" color="gray.500" mt={0.5} noOfLines={1}>
                   {user.email?.split('@')[0] || 'User'}
                 </Text>
               </Box>
@@ -148,6 +151,7 @@ export default function Navbar() {
                 size="sm"
                 colorPalette="red"
                 onClick={logout}
+                flexShrink={0}
               >
                 🚪 Wyloguj
               </Button>
@@ -157,11 +161,12 @@ export default function Navbar() {
 
         {/* Mobile Menu Button */}
         <IconButton 
-          display={{ base: 'flex', md: 'none' }}
+          display={{ base: 'flex', lg: 'none' }}
           variant="ghost"
           aria-label="Menu"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           size="sm"
+          flexShrink={0}
         >
           {mobileMenuOpen ? '✕' : '☰'}
         </IconButton>
@@ -170,7 +175,7 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <Box 
-          display={{ base: 'block', md: 'none' }}
+          display={{ base: 'block', lg: 'none' }}
           pb={4}
           px={4}
           borderTop="1px"
@@ -184,9 +189,11 @@ export default function Navbar() {
               </MobileNavLink>
             )}
             
-            <MobileNavLink to="/lessons" onClick={() => setMobileMenuOpen(false)}>
-              📚 Lekcje
-            </MobileNavLink>
+            {user && (
+              <MobileNavLink to="/lessons" onClick={() => setMobileMenuOpen(false)}>
+                📚 Lekcje
+              </MobileNavLink>
+            )}
             
             {user && (
               <MobileNavLink to="/rooms" onClick={() => setMobileMenuOpen(false)}>

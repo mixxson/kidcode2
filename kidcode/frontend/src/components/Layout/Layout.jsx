@@ -5,14 +5,14 @@ import PageTransition from '../PageTransition'
 
 export default function Layout({ children, maxWidth = '1400px', fullWidth = false }) {
   return (
-    <Box minH="100vh" bg="gray.50">
+    <Box minH="100vh" bg="gray.50" display="flex" flexDirection="column">
       <Navbar />
       
       <PageTransition>
         {fullWidth ? (
-          <Box>{children}</Box>
+          <Box flex="1" pb={6}>{children}</Box>
         ) : (
-          <Container maxW={maxWidth} py={6}>
+          <Container maxW={maxWidth} py={6} pb={8} flex="1">
             {children}
           </Container>
         )}

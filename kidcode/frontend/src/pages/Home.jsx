@@ -89,50 +89,58 @@ export default function Home(){
   // Landing page for non-logged-in users
   if (!user) {
     return (
-      <Box>
+      <Box pb={8}>
         {/* Hero Section */}
         <Box 
           mb={8} 
-          p={12} 
+          p={{ base: 8, md: 12 }}
           bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
           borderRadius="xl"
           color="white"
           textAlign="center"
         >
-          <Text fontSize="5xl" fontWeight="bold" mb={4}>
+          <Text fontSize={{ base: '3xl', md: '5xl' }} fontWeight="bold" mb={4}>
             🎓 KidCode
           </Text>
-          <Text fontSize="2xl" mb={2}>
+          <Text fontSize={{ base: 'xl', md: '2xl' }} mb={2}>
             Interaktywna platforma do nauki programowania dla dzieci
           </Text>
-          <Text fontSize="lg" mb={8} opacity={0.9}>
+          <Text fontSize={{ base: 'md', md: 'lg' }} mb={8} opacity={0.9}>
             Ucz się kodowania krok po kroku z zabawnymi lekcjami i projektami
           </Text>
-          <HStack justify="center" gap={4}>
+          <Flex 
+            direction={{ base: 'column', sm: 'row' }} 
+            justify="center" 
+            align="center"
+            gap={4}
+            flexWrap="wrap"
+          >
             <Button 
-              size="xl" 
+              size={{ base: 'lg', md: 'xl' }}
               colorPalette="green" 
               onClick={() => window.location.href = '/register'}
-              px={8}
-              py={6}
-              fontSize="lg"
+              px={{ base: 6, md: 8 }}
+              py={{ base: 5, md: 6 }}
+              fontSize={{ base: 'md', md: 'lg' }}
+              w={{ base: 'full', sm: 'auto' }}
             >
               🚀 Zacznij teraz - za darmo!
             </Button>
             <Button 
-              size="xl" 
+              size={{ base: 'lg', md: 'xl' }}
               variant="outline" 
               onClick={() => window.location.href = '/login'}
-              px={8}
-              py={6}
-              fontSize="lg"
+              px={{ base: 6, md: 8 }}
+              py={{ base: 5, md: 6 }}
+              fontSize={{ base: 'md', md: 'lg' }}
               color="white"
               borderColor="white"
               _hover={{ bg: 'whiteAlpha.200' }}
+              w={{ base: 'full', sm: 'auto' }}
             >
               Mam już konto
             </Button>
-          </HStack>
+          </Flex>
         </Box>
 
         {/* Features Section */}
@@ -276,28 +284,30 @@ export default function Home(){
 
         {/* CTA Section */}
         <Box 
-          p={12} 
+          p={{ base: 8, md: 12 }}
           bg="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
           borderRadius="xl"
           textAlign="center"
           color="white"
+          mb={8}
         >
-          <Text fontSize="3xl" fontWeight="bold" mb={4}>
+          <Text fontSize={{ base: '2xl', md: '3xl' }} fontWeight="bold" mb={4}>
             Gotowy, aby zacząć swoją przygodę z programowaniem?
           </Text>
-          <Text fontSize="lg" mb={6} opacity={0.95}>
+          <Text fontSize={{ base: 'md', md: 'lg' }} mb={6} opacity={0.95}>
             Dołącz do tysięcy dzieci, które już się uczą!
           </Text>
           <Button 
-            size="xl" 
+            size={{ base: 'lg', md: 'xl' }}
             colorPalette="green"
             onClick={() => window.location.href = '/register'}
-            px={12}
-            py={6}
-            fontSize="xl"
+            px={{ base: 8, md: 12 }}
+            py={{ base: 5, md: 6 }}
+            fontSize={{ base: 'lg', md: 'xl' }}
             bg="white"
             color="purple.600"
             _hover={{ bg: 'gray.100' }}
+            w={{ base: 'full', sm: 'auto' }}
           >
             🎉 Rozpocznij naukę za darmo!
           </Button>

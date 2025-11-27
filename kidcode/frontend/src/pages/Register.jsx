@@ -9,6 +9,7 @@ export default function Register(){
   const [role, setRole] = useState('student') // Default to student
   const [adminKey, setAdminKey] = useState('')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const navigate = useNavigate()
 
   // Check if already logged in
@@ -36,11 +37,17 @@ export default function Register(){
     if (loading) return
     
     setLoading(true)
-    console.log('Starting registration...')
+    setError('')
+    console.log('📝 Starting registration...')
+    console.log('Email:', email)
+    console.log('Password length:', password?.length)
+    console.log('Role:', role)
+    console.log('Admin key provided:', adminKey ? 'YES' : 'NO')
     
     try{
+      console.log('📤 Sending request to /auth/register...')
       const r = await api.post('/auth/register', { email, password, adminKey, role })
-      console.log('Registration response:', r.data)
+      console.log('✅ Registration response:', r.data)
       
       localStorage.setItem('kidcode_token', r.data.token)
       localStorage.setItem('kidcode_user', JSON.stringify(r.data.user))
@@ -61,9 +68,36 @@ export default function Register(){
       window.location.href = redirectUrl
       
     }catch(err){
-      console.error('❌ Registration error:', err)
-      const errorMsg = err?.response?.data?.error || err.message
-      alert('Błąd rejestracji: ' + errorMsg)
+      console.error('❌ Registration error FULL:', err)
+      console.error('❌ Error response:', err?.response)
+      console.error('❌ Error data:', err?.response?.data)
+      console.error('❌ Error message:', err?.message)
+      
+      const errorMsg = err?.response?.data?.error || err.message || 'Nieznany błąd'
+      console.log('📝 Error message extracted:', errorMsg)
+      
+      // Translate common errors to Polish
+      let displayError = errorMsg
+      if (errorMsg.includes('User exists') || errorMsg.includes('already exists')) {
+        displayError = '❌ Użytkownik z tym emailem już istnieje. Zaloguj się lub użyj innego emaila.'
+      } else if (errorMsg.includes('Invalid admin key') || errorMsg.includes('admin key')) {
+        displayError = '❌ Nieprawidłowy klucz administratora. Sprawdź klucz i spróbuj ponownie.'
+      } else if (errorMsg.includes('Email and password required')) {
+        displayError = '❌ Email i hasło są wymagane.'
+      } else if (errorMsg.includes('Password') && errorMsg.includes('short')) {
+        displayError = '❌ Hasło jest za krótkie. Użyj minimum 6 znaków.'
+      } else if (errorMsg.includes('Invalid email')) {
+        displayError = '❌ Nieprawidłowy format emaila.'
+      } else if (errorMsg.includes('Network Error') || errorMsg.includes('ERR_CONNECTION_REFUSED')) {
+        displayError = '❌ Błąd połączenia. Sprawdź czy backend działa na porcie 4000.'
+      } else if (err?.code === 'ERR_NETWORK') {
+        displayError = '❌ Brak połączenia z serwerem. Uruchom backend: cd backend && npm run dev'
+      } else {
+        displayError = '❌ ' + errorMsg
+      }
+      
+      console.log('💬 Displaying error:', displayError)
+      setError(displayError)
       setLoading(false)
     }
   }
@@ -82,6 +116,21 @@ export default function Register(){
           📝 Rejestracja
         </Text>
         
+        {error && (
+          <Box
+            mb={4}
+            p={4}
+            bg="red.50"
+            borderRadius="md"
+            borderWidth="1px"
+            borderColor="red.200"
+          >
+            <Text fontSize="sm" color="red.700" fontWeight="medium">
+              {error}
+            </Text>
+          </Box>
+        )}
+        
         <form onSubmit={handleSubmit}>
           <VStack gap={4} align="stretch">
             <Box>
@@ -91,27 +140,45 @@ export default function Register(){
               <Input
                 type="email"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={e => {
+                  setEmail(e.target.value)
+                  setError('') // Clear error on input
+                }}
                 placeholder="Wprowadź email"
                 required
                 size="lg"
                 disabled={loading}
+                borderColor={error ? 'red.500' : 'gray.300'}
+                _focus={{ borderColor: error ? 'red.500' : 'blue.500' }}
+                _hover={{ borderColor: error ? 'red.600' : 'gray.400' }}
               />
             </Box>
             
             <Box>
               <Text fontSize="sm" fontWeight="medium" mb={2}>
-                Hasło
+                Hasło (minimum 6 znaków)
               </Text>
               <Input
                 type="password"
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={e => {
+                  setPassword(e.target.value)
+                  setError('') // Clear error on input
+                }}
                 placeholder="Wprowadź hasło"
                 required
+                minLength={6}
                 size="lg"
                 disabled={loading}
+                borderColor={error ? 'red.500' : 'gray.300'}
+                _focus={{ borderColor: error ? 'red.500' : 'blue.500' }}
+                _hover={{ borderColor: error ? 'red.600' : 'gray.400' }}
               />
+              {password && password.length < 6 && (
+                <Text fontSize="xs" color="orange.600" mt={1}>
+                  ⚠️ Hasło powinno mieć minimum 6 znaków
+                </Text>
+              )}
             </Box>
             
             <Box>
@@ -162,11 +229,17 @@ export default function Register(){
                 <Input
                   type="password"
                   value={adminKey}
-                  onChange={e => setAdminKey(e.target.value)}
+                  onChange={e => {
+                    setAdminKey(e.target.value)
+                    setError('') // Clear error on input
+                  }}
                   placeholder="Wprowadź klucz administratora"
                   size="lg"
                   disabled={loading}
                   required={role === 'admin'}
+                  borderColor={error && error.includes('klucz') ? 'red.500' : 'gray.300'}
+                  _focus={{ borderColor: error && error.includes('klucz') ? 'red.500' : 'blue.500' }}
+                  _hover={{ borderColor: error && error.includes('klucz') ? 'red.600' : 'gray.400' }}
                 />
                 <Text fontSize="xs" color="gray.500" mt={1}>
                   {role === 'teacher' && 'Bez klucza zostaniesz zwykłym uczniem'}
@@ -181,9 +254,10 @@ export default function Register(){
                 colorPalette="blue"
                 size="lg"
                 width="100%"
-                disabled={loading}
+                disabled={loading || (password && password.length < 6)}
+                loading={loading}
               >
-                {loading ? 'Rejestracja...' : 'Zarejestruj się'}
+                {loading ? '⏳ Rejestracja...' : '🚀 Zarejestruj się'}
               </Button>
               <Button
                 variant="outline"
@@ -193,7 +267,7 @@ export default function Register(){
                 type="button"
                 disabled={loading}
               >
-                Mam już konto
+                🔐 Mam już konto
               </Button>
             </VStack>
           </VStack>
